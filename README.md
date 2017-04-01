@@ -4,28 +4,31 @@
 RCat aims to be a high-level network scanner for both TCP and UDP with basic service detection.
 ### Analysis
 
->- Will you use data abstraction? How?
-We plan to abstract individual IP addresses as 'Machine' objects and create a closure over the IP ( stored as a string ), a list of open TCP ports and a list of IP ports.
->- Will you use recursion? How?
-Information about open and closed ports will be presented by recursing down their respective lists and matching those numbers to a list of respective servers.
+- Will you use data abstraction? How?
+>We plan to abstract individual IP addresses as 'Machine' objects and create a closure over the IP ( stored as a string ), a list of open TCP ports and a list of IP ports.
+
+- Will you use recursion? How?
+
+>Information about open and closed ports will be presented by recursing down their respective lists and matching those numbers to a list of respective servers.
 We will be creating threaded procedures to make connection attempts. These procedures will be evaluated by combining them into a list of targeted 
->- Will you use map/filter/reduce? How? 
-At evaluation our machine object will create a list of ports to scan. This list will be mapped over by the individiual scan procedure, which will create a threaded connection attempt against the IP and port. 
+
+- Will you use map/filter/reduce? How? 
+>At evaluation our machine object will create a list of ports to scan. This list will be mapped over by the individiual scan procedure, which will create a threaded connection attempt against the IP and port. 
 Our lists of open ports will be filtered over by the accessor procedures of the machine object to return appropriate information about the machine. 
 ie (machine1 'open-port? '(22 80)) will filter our list of open ports for port 22 and port 80.
 The result will be applied to another filter which maps over a list of pairings between ports and services and returns the matching port and service of opened ports.
->- Will you use object-orientation? How?
-Machine objects are the fundamental building block of our project. Ideally we would like to be able to differentiate individual machines from subnets or ranges of machines.
+
+- Will you use object-orientation? How?
+>Machine objects are the fundamental building block of our project. Ideally we would like to be able to differentiate individual machines from subnets or ranges of machines.
 192.168.1.1 vs 192.168.1.1/24
->- Will you use functional approaches to processing your data? How?
-The intent is to recurse across all of our data structures to evaluate all calls.
->- Will you use state-modification approaches? How? (If so, this should be encapsulated within objects. `set!` pretty much should only exist inside an object.)
 
->- Will you build an expression evaluator, like we did in the symbolic differentatior and the metacircular evaluator?
-We will be using symbolic differentiation to evaluate the object calls, ie when we call our scanner we pass to it an IP, a list of ports and a list of protocols. These arguments will be evaluated within the context of our objects; passing a 't' signifies that we will be doing TCP, passing (80) will scan a single port vs (1 80) two ports vs (1 - 80) range of ports
+- Will you use functional approaches to processing your data? How?
+>The intent is to recurse across all of our data structures to evaluate all calls.
+- Will you use state-modification approaches? How? (If so, this should be encapsulated within objects. `set!` pretty much should only exist inside an object.)
+
+- Will you build an expression evaluator, like we did in the symbolic differentatior and the metacircular evaluator?
+>We will be using symbolic differentiation to evaluate the object calls, ie when we call our scanner we pass to it an IP, a list of ports and a list of protocols. These arguments will be evaluated within the context of our objects; passing a 't' signifies that we will be doing TCP, passing (80) will scan a single port vs (1 80) two ports vs (1 - 80) range of ports
 - Will you use lazy evaluation approaches?
-
->The idea here is to identify what ideas from the class you will use in carrying out your project. 
 
 
 ### External Technologies
