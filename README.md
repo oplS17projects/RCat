@@ -92,7 +92,14 @@ We are looking to match common services with port numbers, but won't be doing an
 * Stretch goal 
   * subnet object
 * Super stretch goal
-  * file transfers over socket connection
+  * file transfers and message passing over socket connection, emulating NCat
+* Super, SUPER stretch goal 
+  * file transfers over SSL, emulating NCat
+* Can we?
+  * executable file
+   * on a seperate machine open a port using netcat to pipe input into new executable file.
+   * using *RCat* on original machine push the compiled executable binary to the waiting machine
+   * from the 
   
 
 ### First Milestone (Sun Apr 9)
