@@ -1,14 +1,13 @@
-# Project Title Goes Here (10 words maximum)
+# RCat
 
 ### Statement
-RCat aims to be a high-level network scanner for both TCP and UDP with basic service detection.
+RCat aims to be a high-level network scanner for both TCP and UDP with basic service _matching_.
 ### Analysis
 
 - Will you use data abstraction? How?
 >We plan to abstract individual IP addresses as 'Machine' objects and create a closure over the IP ( stored as a string ), a list of open TCP ports and a list of IP ports.
 
 - Will you use recursion? How?
-
 >Information about open and closed ports will be presented by recursing down their respective lists and matching those numbers to a list of respective servers.
 We will be creating threaded procedures to make connection attempts. These procedures will be evaluated by combining them into a list of targeted 
 
@@ -23,11 +22,10 @@ The result will be applied to another filter which maps over a list of pairings 
 192.168.1.1 vs 192.168.1.1/24
 
 - Will you use functional approaches to processing your data? How?
->The intent is to recurse across all of our data structures to evaluate all calls.
-- Will you use state-modification approaches? How? (If so, this should be encapsulated within objects. `set!` pretty much should only exist inside an object.)
+>The intent is to recurse across all of our data structures during evaluations. We will actively be avoiding using set! in favor of creating data structures that we rucurse across.
 
 - Will you build an expression evaluator, like we did in the symbolic differentatior and the metacircular evaluator?
->We will be using symbolic differentiation to evaluate the object calls, ie when we call our scanner we pass to it an IP, a list of ports and a list of protocols. These arguments will be evaluated within the context of our objects; passing a 't' signifies that we will be doing TCP, passing (80) will scan a single port vs (1 80) two ports vs (1 - 80) range of ports
+>We will be using symbolic differentiation to evaluate procedures associated with the object, ie when we call our scanner we pass to it an IP, a list of ports and a list of protocols. These arguments will be evaluated within the context of the machine object; passing a 't' signifies that we will be doing TCP, passing '(80) will scan a single port vs '(1 80) two ports vs '(1 - 80) range of ports
 - Will you use lazy evaluation approaches?
 
 
@@ -35,8 +33,6 @@ The result will be applied to another filter which maps over a list of pairings 
 Our project will depend on the ability to connect with systems dynamically at run time to produce results that are individual to that system. Sure, we could scan localhost, but what is the fun in that?
 
 ### Data Sets or other Source Materials
-http://web.mit.edu/rhel-doc/4/RH-DOCS/rhel-sg-en-4/ch-ports.html
-
 >If you will be working with existing data, where will you get those data from? (Dowload from a website? Access in a database? Create in a simulation you will build? ...)
 
 >How will you convert your data into a form usable for your project?  
@@ -45,13 +41,15 @@ http://web.mit.edu/rhel-doc/4/RH-DOCS/rhel-sg-en-4/ch-ports.html
 
 >If you are using some other starting materials, explain what they are. Basically: anything you plan to use that isn't code.
 
+http://web.mit.edu/rhel-doc/4/RH-DOCS/rhel-sg-en-4/ch-ports.html
+
 ### Deliverable and Demonstration
 We would like a couple components to be involved in our demo. We will create a private network using several virtual machines exposing a variety of services that we will scan against. Some services/machines will be protected by firewalls and we will discuss the implications. We will also scan several internet facing sites that could be considered kosher to scan, ie http://scanme.nmap.org or google's public DNS servers such as 8.8.8.8
 
-We will compare results of our scanner to actual open ports of the systems.
-We would also like to directly compare our program to NMap, the defacto go-to opensource network scannner. We would like to compare the accuracy of our results and the runtime to that of NMaps.
-We can also compare with NCat by using it as a scanner.
+We will compare results of our scanner to actual open ports of the systems using netstat.
+We would also like to directly compare our program to NMap, the defacto go-to opensource network scannner. We would like to compare the accuracy of our results and the runtime.
 
+We can also compare with NetCat's scanning abilities.
 
 >Explain exactly what you'll have at the end. What will it be able to do at the live demo?
 
