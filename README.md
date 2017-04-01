@@ -26,8 +26,6 @@ The result will be applied to another filter which maps over a list of pairings 
 
 - Will you build an expression evaluator, like we did in the symbolic differentatior and the metacircular evaluator?
 >We will be using symbolic differentiation to evaluate procedures associated with the object, ie when we call our scanner we pass to it an IP, a list of ports and a list of protocols. These arguments will be evaluated within the context of the machine object; passing a 't' signifies that we will be doing TCP, passing '(80) will scan a single port vs '(1 80) two ports vs '(1 - 80) range of ports
-- Will you use lazy evaluation approaches?
-
 
 ### External Technologies
 Our project will depend on the ability to connect with systems dynamically at run time to produce results that are individual to that system. Sure, we could scan localhost, but what is the fun in that?
@@ -41,7 +39,10 @@ Our project will depend on the ability to connect with systems dynamically at ru
 
 >If you are using some other starting materials, explain what they are. Basically: anything you plan to use that isn't code.
 
+We will be building a set of data from a mapping of common ports to their services. This list will be used by the machine object to make a best guess at what the port might be running if open.
 http://web.mit.edu/rhel-doc/4/RH-DOCS/rhel-sg-en-4/ch-ports.html
+
+We will also be building out a series of virtual machines in a private subnet to be used as target machines for our demonstration and testing. 
 
 ### Deliverable and Demonstration
 We would like a couple components to be involved in our demo. We will create a private network using several virtual machines exposing a variety of services that we will scan against. Some services/machines will be protected by firewalls and we will discuss the implications. We will also scan several internet facing sites that could be considered kosher to scan, ie http://scanme.nmap.org or google's public DNS servers such as 8.8.8.8
@@ -78,6 +79,21 @@ We are looking to match common services with port numbers, but won't be doing an
 >You will be expected to turn in code, documentation, and data (as appropriate) at each of these stages.
 
 >Write concrete steps for your schedule to move from concept to working system. 
+
+### Major components/obstacles breakdown
+* threading
+* custodians
+* UDP
+* TCP
+* Machine object
+  * constructor
+  * accessors
+  * mutators (scanner procedure)
+* Stretch goal 
+  * subnet object
+* Super stretch goal
+  * file transfers over socket connection
+  
 
 ### First Milestone (Sun Apr 9)
 >Which portion of the work will be completed (and committed to Github) by this day? 
