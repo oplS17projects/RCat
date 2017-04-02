@@ -1,7 +1,8 @@
 # RCat
 
 ### Statement
-RCat aims to be a high-level network scanner for both TCP and UDP with basic service _matching_.
+RCat aims to be a network scanner for both TCP and UDP with basic service to port _matching_.
+
 ### Analysis
 
 - Will you use data abstraction? How?
@@ -28,7 +29,7 @@ The result will be applied to another filter which maps over a list of pairings 
 >We will be using symbolic differentiation to evaluate procedures associated with the object, ie when we call our scanner we pass to it an IP, a list of ports and a list of protocols. These arguments will be evaluated within the context of the machine object; passing a 't' signifies that we will be doing TCP, passing '(80) will scan a single port vs '(1 80) two ports vs '(1 - 80) range of ports
 
 ### External Technologies
-Our project will depend on the ability to connect with systems dynamically at run time to produce results that are individual to that system. Sure, we could scan localhost, but what is the fun in that?
+>Our project will depend on the ability to connect with systems at run time to store the results that are individual to that system. Sure, we could scan localhost, but what is the fun in that?
 
 ### Data Sets or other Source Materials
 >If you will be working with existing data, where will you get those data from? (Dowload from a website? Access in a database? Create in a simulation you will build? ...)
@@ -45,6 +46,9 @@ http://web.mit.edu/rhel-doc/4/RH-DOCS/rhel-sg-en-4/ch-ports.html
 We will also be building out a series of virtual machines in a private subnet to be used as target machines for our demonstration and testing. 
 
 ### Deliverable and Demonstration
+
+Our final product will be give results similar to when using netcat or NCat as a network scanner, but will map common ports to the service they are associated with. One of the bigger differentiators between our deliverable product and NMap is that NMap employs service and version detection by parsing responses and comparing with a database.
+
 We would like a couple components to be involved in our demo. We will create a private network using several virtual machines exposing a variety of services that we will scan against. Some services/machines will be protected by firewalls and we will discuss the implications. We will also scan several internet facing sites that could be considered kosher to scan, ie http://scanme.nmap.org or google's public DNS servers such as 8.8.8.8
 
 We will compare results of our scanner to actual open ports of the systems using netstat.
@@ -52,18 +56,11 @@ We would also like to directly compare our program to NMap, the defacto go-to op
 
 We can also compare with NetCat's scanning abilities.
 
->Explain exactly what you'll have at the end. What will it be able to do at the live demo?
-
->What exactly will you produce at the end of the project? A piece of software, yes, but what will it do? Here are some questions to think about (and answer depending on your application).
-
->Will it run on some data, like batch mode? Will you present some analytical results of the processing? How can it be re-run on different source data?
-
->Will it be interactive? Can you show it working? This project involves a live demo, so interactivity is good.
-
 ### Evaluation of Results
-Since we will be building our private network using virtual machines we will have access to the ports open on the machine. We can compare the results of our scanner with that of NMap as well as reference the machines port listing using netstat. 
+Since we will be building our private network using virtual machines we will have access to the ports open on the machine. We can compare the results of our scanner with that of NMap as well as reference the machines port listing using netstat. A succesfull product means we should see results of our scans matching expectations.
 
 We are looking to match common services with port numbers, but won't be doing any form of version detection. That means we could use netcat to open up port 80 on a virtual machine and our scanner would detect it as a generic web server.
+
 ## Architecture Diagram
 >Upload the architecture diagram you made for your slide presentation to your repository, and include it in-line here.
 
