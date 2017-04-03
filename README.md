@@ -106,10 +106,10 @@ We are looking to match common services with port numbers, but won't be doing an
 ## Group Responsibilities
 
 ### Josh Everett @josh-everett
-test stub for _machine_ class constructor
-completing tcp connection acceptance/drop
-scanner object threading
-VM network
+* test stub for _machine_ class constructor
+* completing tcp connection acceptance/drop
+* scanner object threading
+* VM network
 
 
 ### Jennifer Green @goldenapplepie
