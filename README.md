@@ -61,6 +61,16 @@ We are looking to match common services with port numbers, but won't be doing an
 ![high resolution](/High_Res.png?raw=true "high res architecture")
 
 
+The goal is to create objects which form closures to over IP addresses and open ports of the machine, these objects being an abstraction for a host over a network.
+ 
+Using racket/tcp and racket/udp libraries and threading we will create connection attempts with ports of a target machine, and depending on the response determine if chosen ports are open or not.
+  
+If the ports are open we add them to the respective list of open ports.
+
+Using symbolic differentiation and message passing we interact with the machine object to retrieve information.
+
+
+
 
 ## Schedule
 
