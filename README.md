@@ -113,4 +113,6 @@ We are looking to match common services with port numbers, but won't be doing an
 
 
 ### Jennifer Green @goldenapplepie
-
+* completing udp connection acceptance/drop
+* creating data structures for holding port data list
+* matching port data against list of known ports
