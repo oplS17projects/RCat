@@ -5,28 +5,28 @@ RCat aims to be a network scanner for both TCP and UDP with basic service to por
 
 ### Analysis
 
-- Will you use data abstraction? How?
->We plan to abstract individual IP addresses as 'Machine' objects and create a closure over the IP ( stored as a string ), a list of open TCP ports and a list of IP ports.
+> Will you use data abstraction? How?
+- We plan to abstract individual IP addresses as 'Machine' objects and create a closure over the IP ( stored as a string ), a list of open TCP ports and a list of IP ports.
 
-- Will you use recursion? How?
->Information about open and closed ports will be presented by recursing down their respective lists and matching those numbers to a list of respective servers.
+> Will you use recursion? How?
+- Information about open and closed ports will be presented by recursing down their respective lists and matching those numbers to a list of respective servers.
 We will be creating threaded procedures to make connection attempts. These procedures will be evaluated by combining them into a list of targeted 
 
-- Will you use map/filter/reduce? How? 
->At evaluation our machine object will create a list of ports to scan. This list will be mapped over by the individiual scan procedure, which will create a threaded connection attempt against the IP and port. 
+> Will you use map/filter/reduce? How? 
+- At evaluation our machine object will create a list of ports to scan. This list will be mapped over by the individiual scan procedure, which will create a threaded connection attempt against the IP and port. 
 Our lists of open ports will be filtered over by the accessor procedures of the machine object to return appropriate information about the machine. 
 ie (machine1 'open-port? '(22 80)) will filter our list of open ports for port 22 and port 80.
 The result will be applied to another filter which maps over a list of pairings between ports and services and returns the matching port and service of opened ports.
 
-- Will you use object-orientation? How?
->Machine objects are the fundamental building block of our project. Ideally we would like to be able to differentiate individual machines from subnets or ranges of machines.
+> Will you use object-orientation? How?
+- Machine objects are the fundamental building block of our project. Ideally we would like to be able to differentiate individual machines from subnets or ranges of machines.
 192.168.1.1 vs 192.168.1.1/24
 
-- Will you use functional approaches to processing your data? How?
->The intent is to recurse across all of our data structures during evaluations. We will actively be avoiding using set! in favor of creating data structures that we rucurse across.
+> Will you use functional approaches to processing your data? How?
+- The intent is to recurse across all of our data structures during evaluations. We will actively be avoiding using set! in favor of creating data structures that we rucurse across.
 
-- Will you build an expression evaluator, like we did in the symbolic differentatior and the metacircular evaluator?
->We will be using symbolic differentiation to evaluate procedures associated with the object, ie when we call our scanner we pass to it an IP, a list of ports and a list of protocols. These arguments will be evaluated within the context of the machine object; passing a 't' signifies that we will be doing TCP, passing '(80) will scan a single port vs '(1 80) two ports vs '(1 - 80) range of ports
+> Will you build an expression evaluator, like we did in the symbolic differentatior and the metacircular evaluator?
+- We will be using symbolic differentiation to evaluate procedures associated with the object, ie when we call our scanner we pass to it an IP, a list of ports and a list of protocols. These arguments will be evaluated within the context of the machine object; passing a 't' signifies that we will be doing TCP, passing '(80) will scan a single port vs '(1 80) two ports vs '(1 - 80) range of ports
 
 ### External Technologies
 >Our project will depend on the ability to connect with systems at run time to store the results that are individual to that system. Sure, we could scan localhost, but what is the fun in that?
@@ -41,6 +41,7 @@ The result will be applied to another filter which maps over a list of pairings 
 >If you are using some other starting materials, explain what they are. Basically: anything you plan to use that isn't code.
 
 We will be building a set of data from a mapping of common ports to their services. This list will be used by the machine object to make a best guess at what the port might be running if open.
+Method for storage and retrieval of this information is undecided at this point.
 http://web.mit.edu/rhel-doc/4/RH-DOCS/rhel-sg-en-4/ch-ports.html
 
 We will also be building out a series of virtual machines in a private subnet to be used as target machines for our demonstration and testing. 
@@ -62,24 +63,20 @@ Since we will be building our private network using virtual machines we will hav
 We are looking to match common services with port numbers, but won't be doing any form of version detection. That means we could use netcat to open up port 80 on a virtual machine and our scanner would detect it as a generic web server.
 
 ## Architecture Diagram
->Upload the architecture diagram you made for your slide presentation to your repository, and include it in-line here.
+![low resolution](/Low_Res.png?raw=true "low res architecture")
 
->Create several paragraphs of narrative to explain the pieces and how they interoperate.
+![high resolution](/machineObject.png?raw=true "whiteboard environemt diagram")
+
+![high resolution](/High_Res.png?raw=true "high res architecture")
+
+
 
 ## Schedule
->Explain how you will go from proposal to finished product. 
 
->There are three deliverable milestones to explicitly define, below.
-
->The nature of deliverables depend on your project, but may include things like processed data ready for import, core algorithms implemented, interface design prototyped, etc. 
-
->You will be expected to turn in code, documentation, and data (as appropriate) at each of these stages.
-
->Write concrete steps for your schedule to move from concept to working system. 
-
-### Major components/obstacles breakdown
+### Major components and challenges breakdown
 * threading
 * custodians
+* exception handling
 * UDP
 * TCP
 * Machine object
@@ -91,27 +88,34 @@ We are looking to match common services with port numbers, but won't be doing an
 * Super stretch goal
   * file transfers and message passing over socket connection, emulating NCat
 * Super, SUPER stretch goal 
-  * file transfers over SSL, emulating NCat
+  * SSL option, emulating NCat
 * Can we?
-  * executable file
-   * on a seperate machine open a port using netcat to pipe input into new executable file.
-   * using *RCat* on original machine push the compiled executable binary to the waiting machine
-   * from the 
+  * compile our racket program into an executable file
+   * on a seperate machine open a port using netcat to redirect input into new executable file.
+   * using *RCat* on original host machine push the compiled executable binary to the waiting machine
+   * on waiting machine run compiled binary
+   * two copies of RC
   
 
 ### First Milestone (Sun Apr 9)
->Which portion of the work will be completed (and committed to Github) by this day? 
+* Machine Object with procedure stubs
+ * constructor
+ * accessors
+ * scanner object stub
+
 
 ### Second Milestone (Sun Apr 16)
->Which portion of the work will be completed (and committed to Github) by this day?  
+* data preparation complete for matching port number to service
+* properly differentiating dropped connections from accepted connections
 
 ### Public Presentation (Mon Apr 24, Wed Apr 26, or Fri Apr 28 [your date to be determined later])
->What additionally will be completed before the public presentation?
+* Threading
+* Building out network of virtual machines for demonstration
 
 ## Group Responsibilities
 
 ### Josh Everett @josh-everett
-test stub for _machine_ class
+test stub for _machine_ class constructor
 
 ### Jennifer Green @goldenapplepie
 
