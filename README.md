@@ -1,7 +1,7 @@
 # RCat
 
 ### Statement
-RCat aims to be a network scanner for both TCP and UDP with basic service to port _matching_.
+RCat aims to be a network scanner for both TCP and UDP with basic service to port mapping.
 
 ### Analysis
 
@@ -29,17 +29,9 @@ The result will be applied to another filter which maps over a list of pairings 
 - We will be using symbolic differentiation to evaluate procedures associated with the object, ie when we call our scanner we pass to it an IP, a list of ports and a list of protocols. These arguments will be evaluated within the context of the machine object; passing a 't' signifies that we will be doing TCP, passing '(80) will scan a single port vs '(1 80) two ports vs '(1 - 80) range of ports
 
 ### External Technologies
->Our project will depend on the ability to connect with systems at run time to store the results that are individual to that system. Sure, we could scan localhost, but what is the fun in that?
+Our project will depend on the ability to connect with systems at run time to store the results that are individual to that system. Sure, we could scan localhost, but what is the fun in that?
 
 ### Data Sets or other Source Materials
->If you will be working with existing data, where will you get those data from? (Dowload from a website? Access in a database? Create in a simulation you will build? ...)
-
->How will you convert your data into a form usable for your project?  
-
->If you are pulling data from somewhere, actually go download it and look at it before writing the proposal. Explain in some detail what your plan is for accomplishing the necessary processing.
-
->If you are using some other starting materials, explain what they are. Basically: anything you plan to use that isn't code.
-
 We will be building a set of data from a mapping of common ports to their services. This list will be used by the machine object to make a best guess at what the port might be running if open.
 Method for storage and retrieval of this information is undecided at this point.
 http://web.mit.edu/rhel-doc/4/RH-DOCS/rhel-sg-en-4/ch-ports.html
@@ -47,7 +39,6 @@ http://web.mit.edu/rhel-doc/4/RH-DOCS/rhel-sg-en-4/ch-ports.html
 We will also be building out a series of virtual machines in a private subnet to be used as target machines for our demonstration and testing. 
 
 ### Deliverable and Demonstration
-
 Our final product will be give results similar to when using netcat or NCat as a network scanner, but will map common ports to the service they are associated with. One of the bigger differentiators between our deliverable product and NMap is that NMap employs service and version detection by parsing responses and comparing with a database.
 
 We would like a couple components to be involved in our demo. We will create a private network using several virtual machines exposing a variety of services that we will scan against. Some services/machines will be protected by firewalls and we will discuss the implications. We will also scan several internet facing sites that could be considered kosher to scan, ie http://scanme.nmap.org or google's public DNS servers such as 8.8.8.8
@@ -116,6 +107,10 @@ We are looking to match common services with port numbers, but won't be doing an
 
 ### Josh Everett @josh-everett
 test stub for _machine_ class constructor
+completing tcp connection acceptance/drop
+scanner object threading
+VM network
+
 
 ### Jennifer Green @goldenapplepie
 
