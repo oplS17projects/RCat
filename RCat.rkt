@@ -18,3 +18,31 @@
          ((eq? (car message) 'uport) (check-uport (cdr message)) )
          (else error "Bad moves, dude")))
   dispatch)
+
+; from https://docs.racket-lang.org/reference/eval-model.html#%28part._thread-model%29
+
+; Holy moly Engines look perfect for us!
+; http://stackoverflow.com/questions/17252830/racket-run-thread-for-fixed-amount-of-time
+; #lang racket
+;
+;(require racket/engine)
+;
+;(define e (engine
+;           (λ (_)
+;             ;; just keep printing every second
+;             (let loop ()
+;               (displayln "hi")
+;               (sleep 1)
+;               (loop)))))
+;
+;;; run only for 2 seconds
+;(engine-run 2000 e)
+;> (define foo '(1 2))
+;> foo
+;'(1 2)
+;> (set! foo (cons 2 (cdr foo)))
+;> shit
+;'(2 2)
+;> (set! foo (cons 2 foo))
+;> foo
+;'(2 2 2)
