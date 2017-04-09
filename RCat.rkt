@@ -19,6 +19,23 @@
 ;; we want to return a new list of strings for every address between these endpoints -> '("192.168.1.1" "192.168.1.2" ... "192.168.1.10")
 ;; we can pick apart this list to create a new list of machine objects that we feed the individual IPs to
 
+;; https://docs.racket-lang.org/reference/generic-numbers.html#%28part._.Number--.String_.Conversions%29
+
+
+; > (number->string 3.0)
+; "3.0"
+; > (number->string 255 8)
+; "377"
+; > (string->number "3.0+2.5i")
+; 3.0+2.5i
+; > (string->number "hello")
+; #f
+; > (string->number "111" 7)
+; 57
+; > (string->number "#b111" 7)
+; 7
+; 
+
 (define (RCat targets ports protocols)
   (if (regexp-match? #rx".*-.*" targets) "yes" "no"))
 
