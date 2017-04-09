@@ -1,6 +1,6 @@
 #lang racket
 (require racket/system)
-
+; 
 ; http://stackoverflow.com/questions/30625909/how-would-i-make-this-racket-code-dryer
 (define (execute-command proc-name)
   (define proc (find-executable-path proc-name))
@@ -12,6 +12,7 @@
 (if (regexp-match? #rx".*64.*" ((execute-command "ping") '("-c 3" "8.8.8.8"))) "Yes" "no")
 (if (regexp-match? #rx".*64.*" ((execute-command "ping") '("-c 3" "192.168.6.66"))) "Yes" "no")
 
+; attempt a connection with a non existent port
 (with-handlers ([exn:fail? (lambda (exn) 'air-bag)])
     (let-values (((input output) (tcp-connect "8.8.8.8" 5555)))
                 (list input output)))
