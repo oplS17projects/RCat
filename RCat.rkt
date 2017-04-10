@@ -37,7 +37,32 @@
 ; 
 
 (define (RCat targets ports protocols)
-  (if (regexp-match? #rx".*-.*" targets) "yes" "no"))
+  (if (regexp-match? #rx".*-.*" targets)
+      (ips->machines targets ports protocols)
+      (machine targets ports protocols))
+  )
+
+(define (ips->machines targets ports protocols)
+  "stub")
+(define (range->list targets)
+  ; convert from range of ips to a list of ips
+  ; 192.168.1-15 -> '("192.168.1.1" ... "192.168.1.15")
+  (let*((range(regexp-split #rx"-" targets))
+        (three-octets (regexp-split #rx"//." (car range)))
+        (start (caddr three-octets))
+        (end (cadr range))
+        
+        )
+    three-octets
+    ))
+
+; from ps3c
+(define (enum-range-i a b)
+  (define (enum-range-halper a b total)
+    (if (> a b)
+        total
+        (enum-range-halper (add1 a) b (append total (list a) ))))
+  (enum-range-halper a b '()))
 
 (define (machine ips ports protocols)
   (define open-tcp '())
