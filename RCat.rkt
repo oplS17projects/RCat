@@ -55,8 +55,9 @@
 ;> (if (eof-object? (read-line x)) "hit EOF" (set! ping-input (cons (read-line x) ping-input )))
 ;> ping-input
 ;'("64 bytes from 192.168.1.1: icmp_seq=0 ttl=64 time=13.079 ms")
+
   (define (probe-ping addr)
-    (thread (lambda () (if(regexp-match? #rx".*64.*" (read-line (car (process (string-append "ping -c 1 " addr))))) (add-machine-alive addr)  "no"))))
+    (thread (lambda () (let ((ping-input '()) ) (if(regexp-match? #rx".*64.*" (read-string 4096 (car (process (string-append "ping -c 1 " addr))))) (add-machine-alive addr)  "no")))))
   (define (dispatch message)
     (cond((eq? (car message) 'open) target-machines)
          ((eq? (car message) 'machines) "test")
