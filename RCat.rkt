@@ -8,10 +8,14 @@
       (machine targets ports protocols)))
 
 (define (ips->machines targets ports protocols)
-  (define target-machines '())
+  (define target-machine-ips '())
+  (define machine-list '())
   (define (add-machine-alive ip)
-    (set! target-machines (cons ip target-machines)))
-  (define (check-tports port) "stub")
+    (set! target-machine-ips (cons ip target-machine-ips)))
+  (define (insert-machine machine)
+    (set! machine-list (cons machine machine-list)))
+  (define (check-tports port)
+    (map (lambda (machine) (if (machine '(check-tport port)) (machine '(ip)) " " )) machine-list))
   (define (check-uports port) "stub")
 ;> (define ping-input '())
 ;> (define x (car (process (string-append "ping -c 3 " addr))))
@@ -25,13 +29,15 @@
                     (add-machine-alive addr)
                     "No connection detected")))))
   (define (dispatch message)
-    (cond((eq? (car message) 'up) target-machines)
+    (cond((eq? (car message) 'up) target-machine-ips)
          ((eq? (car message) 'machines) "test")
          ((eq? (car message) 'tport) (check-tports (cdr message)) )
          ((eq? (car message) 'uport) (check-uports (cdr message)) )
-         (else error "Bad moves, dude")))  
-    (begin (map
-            (lambda (target-ip) (probe-ping target-ip) ) (range->list targets) )) dispatch)
+         (else error "Bad moves, dude")))
+  (begin
+    (map (lambda (target-ip) (probe-ping target-ip) ) (range->list targets))
+    (map (lambda (open-ip) (insert-machine (machine open-ip ports protocols)) ) target-machine-ips)
+  dispatch))
   
 
 ; convert from range of ips to a list of ips
@@ -45,9 +51,7 @@
         (individual-machines-int (enum-range-i (string->number start) (string->number end)) )
         (individual-machines-string (map number->string individual-machines-int))
         (subnet (map (lambda (x) (string-append three-octets x)) individual-machines-string) ))
-    subnet
-    
-    ))
+    subnet))
 
 ; from ps3c
 (define (enum-range-i a b)
@@ -57,8 +61,6 @@
         (enum-range-halper (add1 a) b (append total (list a) ))))
   (enum-range-halper a b '()))
 
-
-
 (define (machine ip ports protocols)
   (define open-tcp '())
   (define open-udp '())
@@ -67,25 +69,27 @@
   (define (add-tcp port)
     (set! open-tcp (cons port open-tcp)))
   (define (check-uport port)
-    "stub")
+    (if (memq port open-udp) #t #f))
   (define (check-tport port)
-    "stub")
+    (if (memq port open-tcp) #t #f))
   (define (probe-tcp ip port)
     (thread (lambda () (if (with-handlers ([exn:fail? (lambda (exn) exn )])
-    (let-values (((input output) (tcp-connect "8.8.8.8" port)))
+    (let-values (((input output) (tcp-connect ip port)))
                 (list input output))) (add-tcp port) "NO"))))
   (define (dispatch message)
     (cond((eq? (car message) 'tports) open-tcp)
          ((eq? (car message) 'uports) open-udp)
-         ((eq? (car message) 'tport) (check-tport (cdr message)) )
-         ((eq? (car message) 'uport) (check-uport (cdr message)) )
+         ((eq? (car message) 'ip) ip)
+         ((eq? (car message) 'tport) (check-tport (cadr message)) )
+         ((eq? (car message) 'uport) (check-uport (cadr message)) )
          (else error "Bad moves, dude")))
   (begin (map (lambda (x) (probe-tcp ip x)) (enum-ports ports)) dispatch))
 
 (define (enum-ports ports)
+  (if (regexp-match? #rx".*-.*" ports)
   (let*((range(regexp-split #rx"-" ports))
         (start (car range))
         (end (cadr range))
         (port-range-numbers(enum-range-i (string->number start) (string->number end)))
         (port-range-strings (map number->string port-range-numbers)))
-    port-range-numbers))
+    port-range-numbers) (list (string->number ports)) ))
