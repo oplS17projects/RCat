@@ -42,12 +42,21 @@
       (machine targets ports protocols))
   )
 
+; (if (regexp-match? #rx".*64.*" ((execute-command "ping") '("-c 3" "8.8.8.8"))) "Yes" "no")
+
 (define (ips->machines targets ports protocols)
   (define target-machines '())
   (define (add-machine-alive ip)
-    (set! target-machines (cons ip add-machine-alive)))
+    (set! target-machines (cons ip target-machines)))
   (define (check-tport port) "stub")
   (define (check-uport port) "stub")
+;> (define ping-input '())
+;> (define x (car (process (string-append "ping -c 3 " addr))))
+;> (if (eof-object? (read-line x)) "hit EOF" (set! ping-input (cons (read-line x) ping-input )))
+;> ping-input
+;'("64 bytes from 192.168.1.1: icmp_seq=0 ttl=64 time=13.079 ms")
+  (define (probe-ping addr)
+    (thread (lambda () (if(regexp-match? #rx".*64.*" (read-line (car (process (string-append "ping -c 1 " addr))))) (add-machine-alive addr)  "no"))))
   (define (dispatch message)
     (cond((eq? (car message) 'open) target-machines)
          ((eq? (car message) 'machines) "test")
@@ -55,20 +64,23 @@
          ((eq? (car message) 'uport) (check-uport (cdr message)) )
          (else error "Bad moves, dude")))
   
-    dispatch)
+    (begin (map
+            (lambda (target-ip) (probe-ping target-ip) ) (range->list targets) )) dispatch)
   
 
 (define (range->list targets)
   ; convert from range of ips to a list of ips
   ; (range->list "192.168.1-15") -> '("192.168.1.1" ... "192.168.1.15")
   (let*((range(regexp-split #rx"-" targets))
-        (three-octets (regexp-split #rx"\\." (car range)))
-        (start (cadddr three-octets))
+        (octets (regexp-split #rx"\\." (car range)))
+        (three-octets (string-append (car octets) "." (cadr octets) "." (caddr octets) "."))
+        (start (cadddr octets))
         (end (cadr range))
         (individual-machines-int (enum-range-i (string->number start) (string->number end)) )
         (individual-machines-string (map number->string individual-machines-int))
-        (subnet (map (lambda (x) (string-append (car range) x)) individual-machines-string) ))
+        (subnet (map (lambda (x) (string-append three-octets x)) individual-machines-string) ))
     subnet
+    
     ))
 
 ; from ps3c
@@ -135,7 +147,9 @@
 ;    (let-values (((input output) (tcp-connect ip port)))
 ;                (list input output))) (printf "~a~n" port) "FAIL") 
 ;                   )))
-;
+
+;wi
+
 ;(for ((i 60)) (thread
 ;                 (lambda () (if (with-handlers ([exn:fail? (lambda (exn) exn )])
 ;    (let-values (((input output) (tcp-connect "8.8.8.8" i)))
