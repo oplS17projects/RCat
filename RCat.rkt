@@ -81,7 +81,7 @@
 
 
 
-(define (machine ips ports protocols)
+(define (machine ip ports protocols)
   (define open-tcp '())
   (define open-udp '())
   (define (add-upd port)
@@ -92,13 +92,25 @@
     "stub")
   (define (check-tport port)
     "stub")
+  (define (probe-tcp ip port)
+    (thread (lambda () (if (with-handlers ([exn:fail? (lambda (exn) exn )])
+    (let-values (((input output) (tcp-connect "8.8.8.8" port)))
+                (list input output))) (add-tcp port) "NO"))))
   (define (dispatch message)
     (cond((eq? (car message) 'tports) open-tcp)
          ((eq? (car message) 'uports) open-udp)
          ((eq? (car message) 'tport) (check-tport (cdr message)) )
          ((eq? (car message) 'uport) (check-uport (cdr message)) )
          (else error "Bad moves, dude")))
-  dispatch)
+  (begin (map (lambda (x) (probe-tcp ip x)) (enum-ports ports)) dispatch))
+
+(define (enum-ports ports)
+  (let*((range(regexp-split #rx"-" ports))
+        (start (car range))
+        (end (cadr range))
+        (port-range-numbers(enum-range-i (string->number start) (string->number end)))
+        (port-range-strings (map number->string port-range-numbers)))
+    port-range-numbers))
 
 ; http://stackoverflow.com/questions/30625909/how-would-i-make-this-racket-code-dryer
 (define (execute-command proc-name)
@@ -116,14 +128,18 @@
 ;    (let-values (((input output) (tcp-connect "8.8.8.8" 5555)))
 ;                (list input output)))
 
-(define (worker ip port) (thread
-                 (lambda ()
-                   (if (with-handlers ([exn:fail? (lambda (exn) exn )])
-    (let-values (((input output) (tcp-connect ip port)))
-                (list input output))) (printf "~a~n" port) "FAIL") 
-                   )))
- 
-
+;
+; (define (worker ip port) (thread
+;                 (lambda ()
+;                   (if (with-handlers ([exn:fail? (lambda (exn) exn )])
+;    (let-values (((input output) (tcp-connect ip port)))
+;                (list input output))) (printf "~a~n" port) "FAIL") 
+;                   )))
+;
+;(for ((i 60)) (thread
+;                 (lambda () (if (with-handlers ([exn:fail? (lambda (exn) exn )])
+;    (let-values (((input output) (tcp-connect "8.8.8.8" i)))
+;                (list input output))) (printf "~a~n" i) "NO"))))
 
 
 ;(define (worker num) (thread
