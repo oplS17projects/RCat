@@ -43,11 +43,24 @@
   )
 
 (define (ips->machines targets ports protocols)
-  "stub")
+  (define target-machines '())
+  (define (add-machine-alive ip)
+    (set! target-machines (cons ip add-machine-alive)))
+  (define (check-tport port) "stub")
+  (define (check-uport port) "stub")
+  (define (dispatch message)
+    (cond((eq? (car message) 'open) target-machines)
+         ((eq? (car message) 'machines) "test")
+         ((eq? (car message) 'tport) (check-tport (cdr message)) )
+         ((eq? (car message) 'uport) (check-uport (cdr message)) )
+         (else error "Bad moves, dude")))
+  
+    dispatch)
+  
 
 (define (range->list targets)
   ; convert from range of ips to a list of ips
-  ; 192.168.1-15 -> '("192.168.1.1" ... "192.168.1.15")
+  ; (range->list "192.168.1-15") -> '("192.168.1.1" ... "192.168.1.15")
   (let*((range(regexp-split #rx"-" targets))
         (three-octets (regexp-split #rx"\\." (car range)))
         (start (cadddr three-octets))
@@ -65,6 +78,8 @@
         total
         (enum-range-halper (add1 a) b (append total (list a) ))))
   (enum-range-halper a b '()))
+
+
 
 (define (machine ips ports protocols)
   (define open-tcp '())
@@ -101,6 +116,21 @@
 ;    (let-values (((input output) (tcp-connect "8.8.8.8" 5555)))
 ;                (list input output)))
 
+(define (worker ip port) (thread
+                 (lambda ()
+                   (if (with-handlers ([exn:fail? (lambda (exn) exn )])
+    (let-values (((input output) (tcp-connect ip port)))
+                (list input output))) (printf "~a~n" port) "FAIL") 
+                   )))
+ 
+
+
+
+;(define (worker num) (thread
+;                 (lambda ()
+;                   (for ([i num])
+;                     (printf "Working hard... ~a~n" i)))))
+; 
 
 ; OK, engine might not be the best method to do thread creation. After some testing, it like engine expects to evaluate at runtime and then await a signal for execution of body.
 
