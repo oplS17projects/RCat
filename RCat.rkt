@@ -73,9 +73,9 @@
   (define (check-tport port)
     (if (memq port open-tcp) #t #f))
   (define (probe-tcp ip port)
-    (thread (lambda () (if (with-handlers ([exn:fail? (lambda (exn) exn )])
+    (thread (lambda () (with-handlers ([exn:fail? (lambda (exn) exn )])(if 
     (let-values (((input output) (tcp-connect ip port)))
-                (list input output))) (add-tcp port) "NO"))))
+                (list input output)) (add-tcp port) "NO")))))
   (define (dispatch message)
     (cond((eq? (car message) 'tports) open-tcp)
          ((eq? (car message) 'uports) open-udp)
