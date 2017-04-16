@@ -44,16 +44,18 @@
 
 (define (ips->machines targets ports protocols)
   "stub")
+
 (define (range->list targets)
   ; convert from range of ips to a list of ips
   ; 192.168.1-15 -> '("192.168.1.1" ... "192.168.1.15")
   (let*((range(regexp-split #rx"-" targets))
-        (three-octets (regexp-split #rx"//." (car range)))
-        (start (caddr three-octets))
+        (three-octets (regexp-split #rx"\\." (car range)))
+        (start (cadddr three-octets))
         (end (cadr range))
-        
-        )
-    three-octets
+        (individual-machines-int (enum-range-i (string->number start) (string->number end)) )
+        (individual-machines-string (map number->string individual-machines-int))
+        (subnet (map (lambda (x) (string-append (car range) x)) individual-machines-string) ))
+    subnet
     ))
 
 ; from ps3c
