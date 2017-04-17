@@ -46,6 +46,7 @@
 ;#t
 ;> 
 
+
 (define (check-tports port)
   (map (lambda (machine-dispatch) (if(machine-dispatch (list 'tport port)) (machine-dispatch '(ip)) " ")) machine-list))
 
