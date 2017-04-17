@@ -23,7 +23,6 @@
                     (set! machine-list (cons (machine addr ports protocols) machine-list));add-machine-alive addr)
                     "No connection detected")))))
   (define (dispatch message)
-    ;(define machine-list '())
     (set! machine-list (map (lambda (open-ip) (machine open-ip ports protocols)) target-machine-ips))
     (cond((eq? (car message) 'up) target-machine-ips)
          ((eq? (car message) 'machines) machine-list )
@@ -46,7 +45,8 @@
 ;#t
 ;> 
 
-
+(define (all-tports)
+  (for-each (lambda (machine-dispatch) (printf "IP:\n~a\nOpen ports:\n~s\n\n" (machine-dispatch '(ip)) (machine-dispatch '(tports))  ))  machine-list))
 (define (check-tports port)
   (map (lambda (machine-dispatch) (if(machine-dispatch (list 'tport port)) (machine-dispatch '(ip)) " ")) machine-list))
 
@@ -83,7 +83,6 @@
   (define (check-tport port)
     (if (memq (string->number port) open-tcp) #t #f))
   (define (probe-tcp ip port)
-    (display "MAKING THREAD")
     (thread (lambda () (with-handlers ([exn:fail? (lambda (exn) exn )])
                          (if
                           (let-values (((input output) (tcp-connect ip port))) (list input output))
