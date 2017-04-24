@@ -1,6 +1,7 @@
 #lang racket
 (require racket/system)
 (require racket/tcp)
+(require racket/udp)
 (define machine-list '())
 ; refactor and comment
 ; build out network
@@ -11,12 +12,16 @@
 (display "NCat usage\n")
 (display "Usage examples")
 
+; Add more user guidance here
+
+; Checks to see if the user gives a single IP address or a range of IP addresses
+; If given a range, takes each IP individually and adds to a list of IPs
 (define (RCat targets ports protocols)
   (if (regexp-match? #rx".*-.*" targets)
       (ips->machines targets ports protocols)
       (machine targets ports protocols)))
 
-
+; Takes a range of IP addresses and etc etc
 (define (ips->machines targets ports protocols)
   (let ((target-machine-ips '()))
   (define (add-machine-alive ip)
@@ -57,6 +62,10 @@
 (define (check-tports port)
   (map (lambda (machine-dispatch) (if(machine-dispatch (list 'tport port)) (machine-dispatch '(ip)) " ")) machine-list))
 
+;    >>>>>>>>>>TO BE CODED<<<<<<<<<<<<
+(define (all-uports)
+  ("stub") )
+
 ; convert from range of ips to a list of ips
 ; (range->list "192.168.1-15") -> '("192.168.1.1" ... "192.168.1.15")
 (define (range->list targets)
@@ -90,6 +99,7 @@
     (if (memq port open-udp) #t #f))
   (define (check-tport port)
     (if (memq (string->number port) open-tcp) #t #f))
+  (define (probe-udp ip port) "stub")
   (define (probe-tcp ip port)
     (thread (lambda () (with-handlers ([exn:fail? (lambda (exn) exn )])
                          (if
@@ -125,4 +135,8 @@
 ;> (define x (car (process (string-append "ping -c 3 " addr))))
 ;> (if (eof-object? (read-line x)) "hit EOF" (set! ping-input (cons (read-line x) ping-input )))
 ;> ping-input
-;'("64 bytes from 192.168.1.1: icmp_seq=0 ttl=64 time=13.079 ms")
+;'("64 bytes from 192.168.1.1: icmp_seq=0 ttl=64 time=13.079 ms")(define machine-list '())
+; refactor and comment
+; build out network
+; start poster writing
+; preparing code samples / documentation for readme 
