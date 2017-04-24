@@ -2,9 +2,15 @@
 (require racket/system)
 (require racket/tcp)
 (define machine-list '())
+; refactor and comment
+; build out network
+; start poster writing
+; preparing code samples / documentation for readme 
+
 
 (display "NCat usage\n")
 (display "Usage examples")
+
 (define (RCat targets ports protocols)
   (if (regexp-match? #rx".*-.*" targets)
       (ips->machines targets ports protocols)
@@ -47,6 +53,7 @@
 
 (define (all-tports)
   (for-each (lambda (machine-dispatch) (printf "IP:\n~a\nOpen ports:\n~s\n\n" (machine-dispatch '(ip)) (machine-dispatch '(tports))  ))  machine-list))
+;dont use me
 (define (check-tports port)
   (map (lambda (machine-dispatch) (if(machine-dispatch (list 'tport port)) (machine-dispatch '(ip)) " ")) machine-list))
 
@@ -70,6 +77,7 @@
         total
         (enum-range-halper (add1 a) b (append total (list a) ))))
   (enum-range-halper a b '()))
+
 
 (define (machine ip ports protocols)
   (define open-tcp '())
@@ -96,6 +104,7 @@
          ((eq? (car message) 'uport) (check-uport (cadr message)) )
          (else error "Bad moves, dude")))
   (begin (map (lambda (x) (probe-tcp ip x)) (enum-ports ports)) dispatch))
+
 
 (define (enum-ports ports)
   (if
