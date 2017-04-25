@@ -48,19 +48,6 @@
                     "No connection detected")))))
     (for-each (lambda (target-ip) (probe-ping target-ip) ) (range->list targets)))
 
-
-;> (define z (ips->machines "8.8.8.8-9" "53" "t"))
-;> (z '(machines))
-;'(#<procedure:dispatch>)
-;> (define test (z '(machines)))
-;> (car test)
-;#<procedure:dispatch>
-;> ((car test) '(ip))
-;"8.8.8.8"
-;> ((car test) '(tport 53))
-;#t
-;> 
-
 (define (all-tports)
   (for-each (lambda (machine-dispatch)
               (begin (printf "IP: ~a\nOpen ports:\n" (machine-dispatch '(ip))) (machine-dispatch '(tports)) (printf "\n")) )
@@ -106,6 +93,12 @@
     (if (memq port open-udp) #t #f))
   (define (check-tport port)
     (if (memq (string->number port) open-tcp) #t #f))
+  ; map across our list of open ports. For each port we print it out and then map across the list of strings loaded from the common ports text file
+  ; we check every pair to see if it is the correct number then display the matching service if we find it.
+  (define (match-ports tport-list) (for-each (lambda (openport)
+                      (begin (printf "\t~a\t" openport)
+                                 (for-each (lambda (x) (cond ((string=? (car x) (number->string openport)) (displayln (cdr x))))) string-port-to-name)))
+                    tport-list))
   (define (probe-udp ip port) "stub")
   (define (probe-tcp ip port)
     (thread (lambda () (with-handlers ([exn:fail? (lambda (exn) exn )])
@@ -114,14 +107,7 @@
                           (add-tcp port)
                           "No connection detected")))))
   (define (dispatch message)
-    (cond((eq? (car message) 'tports) (for-each (lambda (openport)
-                                                  (begin
-                                                    (printf "\t~a\t" openport)
-                                 ;(display openport)
-                                 ;(display "\t")
-                                 (for-each (lambda (x) (cond
-                                                         ((string=? (car x) (number->string openport))
-                          (displayln (cdr x))))) string-port-to-name))) open-tcp))
+    (cond((eq? (car message) 'tports) (match-ports open-tcp))
          ((eq? (car message) 'uports) open-udp)
          ((eq? (car message) 'ip) ip)
          ((eq? (car message) 'tport) (check-tport (cadr message)) )
@@ -131,23 +117,11 @@
 
 
 (define (enum-ports ports)
-  (if
-   (regexp-match? #rx".*-.*" ports)
-  (let*((range(regexp-split #rx"-" ports))
+  (if (regexp-match? #rx".*-.*" ports)
+      (let*((range(regexp-split #rx"-" ports))
         (start (car range))
         (end (cadr range))
         (port-range-numbers(enum-range-i (string->number start) (string->number end)))
         (port-range-strings (map number->string port-range-numbers)))
-    port-range-numbers) (list (string->number ports)) ))
-
-
-
-;;; notes
-
-; ping concept + notes on reading port streams
-;> (define ping-input '())
-;> (define x (car (process (string-append "ping -c 3 " addr))))
-;> (if (eof-object? (read-line x)) "hit EOF" (set! ping-input (cons (read-line x) ping-input )))
-;> ping-input
-;'("64 bytes from 192.168.1.1: icmp_seq=0 ttl=64 time=13.079 ms")(define machine-list '())
-
+        port-range-numbers)
+      (list (string->number ports))))
