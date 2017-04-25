@@ -4,14 +4,17 @@
 (require racket/udp)
 (define machine-list '())
 
+;; preparing port matching file by splitting the file into a list of string
 (define port_match(file->lines "common_ports.txt"))
 (for-each (lambda (x) (regexp-split #rx"\t" x)) port_match)
+;; break up each string by delimiting tab
 (define string-port-to-name (map (lambda (x) (regexp-split #rx"\t" x)) port_match))
 
 ; refactor and comment
 ; start poster writing
 ; preparing code samples / documentation for readme 
 
+;; example outoutput
 ;> (ips->machines "192.168.1.1-10" "1-443" "t")
 ;> (all-tports)
 ;IP: 192.168.1.1
@@ -31,14 +34,14 @@
 ; Add more user guidance here
 
 ; Checks to see if the user gives a single IP address or a range of IP addresses
-; If given a range, takes each IP individually and adds to a list of IPs
+; If given a range, takes each IP individually and adds to machine-list in the global environment
 (define (RCat targets ports protocols)
   (if (regexp-match? #rx".*-.*" targets)
       (ips->machines targets ports protocols)
       (machine targets ports protocols)))
 
-; Takes a range of IP addresses ( noted by '-' ) and pings each system. We wait for a response before
-; adding creating an individual machine object and adding it to the list of machine objects in the global environment
+; Takes a range of IP addresses ( denoted by '-' ) and pings each system. We count the machine as dead if we do not receive a response
+; within three seconds, otherwise we are creating an individual machine object and adding it to the list of machines in the global environment
 (define (ips->machines targets ports protocols)
   (define (probe-ping addr)
     (thread (lambda ()
@@ -48,6 +51,7 @@
                     "No connection detected")))))
     (for-each (lambda (target-ip) (probe-ping target-ip) ) (range->list targets)))
 
+;; print out ip and tcp port of every machine in machine-list
 (define (all-tports)
   (for-each (lambda (machine-dispatch)
               (begin (printf "IP: ~a\nOpen ports:\n" (machine-dispatch '(ip))) (machine-dispatch '(tports)) (printf "\n")) )
@@ -100,7 +104,7 @@
                                  (for-each (lambda (x) (cond ((string=? (car x) (number->string openport)) (displayln (cdr x))))) string-port-to-name)))
                     tport-list))
   (define (probe-udp ip port) "stub")
-  (define (probe-tcp ip port)
+  (define (probe-tcp port)
     (thread (lambda () (with-handlers ([exn:fail? (lambda (exn) exn )])
                          (if
                           (let-values (((input output) (tcp-connect ip port))) (list input output))
@@ -113,9 +117,10 @@
          ((eq? (car message) 'tport) (check-tport (cadr message)) )
          ((eq? (car message) 'uport) (check-uport (cadr message)) )
          (else error "Bad moves, dude")))
-  (begin (map (lambda (x) (probe-tcp ip x)) (enum-ports ports)) dispatch))
+  (begin (map (lambda (x) (probe-tcp x)) (enum-ports ports)) dispatch))
 
-
+;; break a range up ports in form "1-443"
+;; return a list of numbers
 (define (enum-ports ports)
   (if (regexp-match? #rx".*-.*" ports)
       (let*((range(regexp-split #rx"-" ports))
