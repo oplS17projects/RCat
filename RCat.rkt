@@ -3,11 +3,36 @@
 (require racket/tcp)
 (require racket/udp)
 (define machine-list '())
+
 ; refactor and comment
 ; build out network
 ; start poster writing
 ; preparing code samples / documentation for readme 
 
+
+;; example output
+;> (ips->machines "192.168.1.1-10" "1-443" "t")
+;> (all-tports)
+;IP:
+;192.168.1.1
+;Open ports:
+;(23 443 53 80)
+;
+;IP:
+;192.168.1.3
+;Open ports:
+;(22)
+;
+;IP:
+;192.168.1.5
+;Open ports:
+;()
+;
+;IP:
+;192.168.1.8
+;Open ports:
+;()
+;
 
 (display "NCat usage\n")
 (display "Usage examples")
@@ -21,28 +46,17 @@
       (ips->machines targets ports protocols)
       (machine targets ports protocols)))
 
-; Takes a range of IP addresses and etc etc
+; Takes a range of IP addresses ( noted by '-' ) and pings each system. We wait for a response before
+; adding creating an individual machine object and adding it to the list of machine objects in the global environment
 (define (ips->machines targets ports protocols)
-  (let ((target-machine-ips '()))
-  (define (add-machine-alive ip)
-    (set! target-machine-ips (cons ip target-machine-ips)))
-  (define (check-uports port) "stub")
   (define (probe-ping addr)
     (thread (lambda ()
               (let ((ping-input '()))
                 (if (regexp-match? #rx".*64.*" (read-string 4096 (car (process (string-append "ping -c 3 " addr)))))
                     (set! machine-list (cons (machine addr ports protocols) machine-list));add-machine-alive addr)
                     "No connection detected")))))
-  (define (dispatch message)
-    (set! machine-list (map (lambda (open-ip) (machine open-ip ports protocols)) target-machine-ips))
-    (cond((eq? (car message) 'up) target-machine-ips)
-         ((eq? (car message) 'machines) machine-list )
-         ((eq? (car message) 'tport) (check-tports (cdr message)) )
-         ((eq? (car message) 'uport) (check-uports (cdr message)) )
-         (else error "Bad moves, dude")))
-  (begin
-    (map (lambda (target-ip) (probe-ping target-ip) ) (range->list targets))
-  dispatch)))
+    (for-each (lambda (target-ip) (probe-ping target-ip) ) (range->list targets)))
+
 
 ;> (define z (ips->machines "8.8.8.8-9" "53" "t"))
 ;> (z '(machines))
@@ -58,9 +72,6 @@
 
 (define (all-tports)
   (for-each (lambda (machine-dispatch) (printf "IP:\n~a\nOpen ports:\n~s\n\n" (machine-dispatch '(ip)) (machine-dispatch '(tports))  ))  machine-list))
-;dont use me
-(define (check-tports port)
-  (map (lambda (machine-dispatch) (if(machine-dispatch (list 'tport port)) (machine-dispatch '(ip)) " ")) machine-list))
 
 ;    >>>>>>>>>>TO BE CODED<<<<<<<<<<<<
 (define (all-uports)
@@ -80,6 +91,7 @@
     subnet))
 
 ; from ps3c
+; iterative function to create and return a list of number sequentially within a given range
 (define (enum-range-i a b)
   (define (enum-range-halper a b total)
     (if (> a b)
@@ -87,7 +99,9 @@
         (enum-range-halper (add1 a) b (append total (list a) ))))
   (enum-range-halper a b '()))
 
-
+;; Machine object
+;  takes an IP address[string], port(s)[string], and protocol[string]
+;  returns dispatch procedure
 (define (machine ip ports protocols)
   (define open-tcp '())
   (define open-udp '())
@@ -136,7 +150,4 @@
 ;> (if (eof-object? (read-line x)) "hit EOF" (set! ping-input (cons (read-line x) ping-input )))
 ;> ping-input
 ;'("64 bytes from 192.168.1.1: icmp_seq=0 ttl=64 time=13.079 ms")(define machine-list '())
-; refactor and comment
-; build out network
-; start poster writing
-; preparing code samples / documentation for readme 
+
