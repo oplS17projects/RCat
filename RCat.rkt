@@ -4,35 +4,26 @@
 (require racket/udp)
 (define machine-list '())
 
+(define port_match(file->lines "common_ports.txt"))
+(for-each (lambda (x) (regexp-split #rx"\t" x)) port_match)
+(define string-port-to-name (map (lambda (x) (regexp-split #rx"\t" x)) port_match))
+
 ; refactor and comment
-; build out network
 ; start poster writing
 ; preparing code samples / documentation for readme 
 
-
-;; example output
 ;> (ips->machines "192.168.1.1-10" "1-443" "t")
 ;> (all-tports)
-;IP:
-;192.168.1.1
+;IP: 192.168.1.1
 ;Open ports:
-;(23 443 53 80)
+;	23	(Telnet)
+;	80	(HTTP)
+;	53	(Domain Name System (DNS))
+;	443	(HTTPS)
 ;
-;IP:
-;192.168.1.3
+;IP: 192.168.1.8
 ;Open ports:
-;(22)
-;
-;IP:
-;192.168.1.5
-;Open ports:
-;()
-;
-;IP:
-;192.168.1.8
-;Open ports:
-;()
-;
+
 
 (display "NCat usage\n")
 (display "Usage examples")
@@ -71,7 +62,9 @@
 ;> 
 
 (define (all-tports)
-  (for-each (lambda (machine-dispatch) (printf "IP:\n~a\nOpen ports:\n~s\n\n" (machine-dispatch '(ip)) (machine-dispatch '(tports))  ))  machine-list))
+  (for-each (lambda (machine-dispatch)
+              (begin (printf "IP: ~a\nOpen ports:\n" (machine-dispatch '(ip))) (machine-dispatch '(tports)) (printf "\n")) )
+            machine-list))
 
 ;    >>>>>>>>>>TO BE CODED<<<<<<<<<<<<
 (define (all-uports)
@@ -121,7 +114,14 @@
                           (add-tcp port)
                           "No connection detected")))))
   (define (dispatch message)
-    (cond((eq? (car message) 'tports) open-tcp)
+    (cond((eq? (car message) 'tports) (for-each (lambda (openport)
+                                                  (begin
+                                                    (printf "\t~a\t" openport)
+                                 ;(display openport)
+                                 ;(display "\t")
+                                 (for-each (lambda (x) (cond
+                                                         ((string=? (car x) (number->string openport))
+                          (displayln (cdr x))))) string-port-to-name))) open-tcp))
          ((eq? (car message) 'uports) open-udp)
          ((eq? (car message) 'ip) ip)
          ((eq? (car message) 'tport) (check-tport (cadr message)) )
