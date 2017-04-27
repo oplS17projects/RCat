@@ -120,7 +120,7 @@
   ; if we do, print it.
   (define (match-ports tport-list) (for-each (lambda (openport)
                       (begin (printf "\t~a\t" openport)
-                                 (for-each (lambda (x) (cond ((string=? (car x) (number->string openport)) (displayln (cdr x))))) tport-to-service)))
+                                 (for-each (lambda (x) (cond ((string=? (car x) (number->string openport)) (display (cdr x))))) tport-to-service)) (display "\n"))
                     tport-list))
   (define (probe-udp ip port) "stub")
   (define (probe-tcp port)
