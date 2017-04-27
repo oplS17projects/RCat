@@ -3,13 +3,14 @@
 (require racket/tcp)
 (require racket/udp)
 (define machine-list '())
+;; UDP ports should be stored within the closure of the individual machine object
 (define machine-udp-list '())
 
 ;; preparing port matching file by splitting the file into a list of string
 (define tcp_port_match(file->lines "common_tcp_ports.txt"))
 (for-each (lambda (x) (regexp-split #rx"\t" x)) tcp_port_match)
 ;; break up each string by delimiting tab
-(define string-port-to-name (map (lambda (x) (regexp-split #rx"\t" x)) tcp_port_match))
+(define tport-to-service (map (lambda (x) (regexp-split #rx"\t" x)) tcp_port_match))
 
 ; refactor and comment
 ; start poster writing
@@ -29,13 +30,20 @@
 ;Open ports:
 
 
-(display "NCat usage\n")
-(display "Usage examples")
+(displayln "How to use RCat")
+(displayln "Usage for multiple machines :")
+(displayln "\t> (ips->machines \"192.168.1.1-10\" \"1-443\" \"t\")")
+(displayln "\t> (all-tports)")
+(displayln "Usage for single machine : ")
+(displayln "\t> (define router (machine \"192.168.1.1\" \"1-4096\" \"t\"))")
+(displayln "\t> (router '(tports))")
+           
 
 ; Add more user guidance here
 
 ; Checks to see if the user gives a single IP address or a range of IP addresses
-; If given a range, takes each IP individually and adds to machine-list in the global environment
+; If given a range, each IP is subjected to a ICMP Ping to determine if the machine is alive or not to avoid unnecessary connection attempt with probes
+; before adding to the machine-list in the global environment
 (define (RCat targets ports protocols)
   (if (regexp-match? #rx".*-.*" targets)
       (ips->machines targets ports protocols)
@@ -54,9 +62,12 @@
 
 ;; print out ip and tcp port of every machine in machine-list
 (define (all-tports)
-  (for-each (lambda (machine-dispatch)
-              (begin (printf "IP: ~a\nOpen TCP ports:\n" (machine-dispatch '(ip))) (machine-dispatch '(tports)) (printf "\n")) )
-            machine-list))
+  (for-each
+   (lambda (machine-dispatch) (begin
+                                (printf "IP: ~a\nOpen TCP ports:\n" (machine-dispatch '(ip)))
+                                (machine-dispatch '(tports))
+                                (printf "\n")))
+   machine-list))
 
 ;    >>>>>>>>>>NEEDS TESTING<<<<<<<<<<<<
 (define (all-uports)
@@ -102,9 +113,14 @@
     (if (memq (string->number port) open-tcp) #t #f))
   ; map across our list of open ports. For each port we print it out and then map across the list of strings loaded from the common ports text file
   ; we check every pair to see if it is the correct number then display the matching service if we find it.
+
+  ; redesign this as an accumulation?
+  ; accumulate across our list of open ports that will take the port number
+  ; and traverse the tport-to-service list, checking to see if we have the service.
+  ; if we do, print it.
   (define (match-ports tport-list) (for-each (lambda (openport)
                       (begin (printf "\t~a\t" openport)
-                                 (for-each (lambda (x) (cond ((string=? (car x) (number->string openport)) (displayln (cdr x))))) string-port-to-name)))
+                                 (for-each (lambda (x) (cond ((string=? (car x) (number->string openport)) (displayln (cdr x))))) tport-to-service)))
                     tport-list))
   (define (probe-udp ip port) "stub")
   (define (probe-tcp port)
@@ -115,6 +131,7 @@
                           "No connection detected")))))
   (define (dispatch message)
     (cond((eq? (car message) 'tports) (match-ports open-tcp))
+         ((eq? (car message) 'dtports) open-tcp)
          ((eq? (car message) 'uports) open-udp)
          ((eq? (car message) 'ip) ip)
          ((eq? (car message) 'tport) (check-tport (cadr message)) )
