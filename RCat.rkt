@@ -3,12 +3,13 @@
 (require racket/tcp)
 (require racket/udp)
 (define machine-list '())
+(define machine-udp-list '())
 
 ;; preparing port matching file by splitting the file into a list of string
-(define port_match(file->lines "common_ports.txt"))
-(for-each (lambda (x) (regexp-split #rx"\t" x)) port_match)
+(define tcp_port_match(file->lines "common_tcp_ports.txt"))
+(for-each (lambda (x) (regexp-split #rx"\t" x)) tcp_port_match)
 ;; break up each string by delimiting tab
-(define string-port-to-name (map (lambda (x) (regexp-split #rx"\t" x)) port_match))
+(define string-port-to-name (map (lambda (x) (regexp-split #rx"\t" x)) tcp_port_match))
 
 ; refactor and comment
 ; start poster writing
@@ -54,12 +55,14 @@
 ;; print out ip and tcp port of every machine in machine-list
 (define (all-tports)
   (for-each (lambda (machine-dispatch)
-              (begin (printf "IP: ~a\nOpen ports:\n" (machine-dispatch '(ip))) (machine-dispatch '(tports)) (printf "\n")) )
+              (begin (printf "IP: ~a\nOpen TCP ports:\n" (machine-dispatch '(ip))) (machine-dispatch '(tports)) (printf "\n")) )
             machine-list))
 
-;    >>>>>>>>>>TO BE CODED<<<<<<<<<<<<
+;    >>>>>>>>>>NEEDS TESTING<<<<<<<<<<<<
 (define (all-uports)
-  ("stub") )
+  (for-each (lambda (machine-dispatch) 
+              (begin (printf "IP: ~a\nOpen UDP ports:\n" (machine-dispatch '(ip))) (machine-dispatch '(uports)) (printf "\n")) )
+            machine-udp-list))
 
 ; convert from range of ips to a list of ips
 ; (range->list "192.168.1-15") -> '("192.168.1.1" ... "192.168.1.15")
