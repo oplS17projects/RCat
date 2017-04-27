@@ -51,25 +51,63 @@ Virtual Network built out with VMWare Fusion and the following machines
 
 
 ### Deliverable and Demonstration
-Our final product will be give results similar to when using netcat or NCat as a network scanner, but will map common ports to the service they are associated with. One of the bigger differentiators between our deliverable product and NMap is that NMap employs service and version detection by parsing responses and comparing with a database.
+```racket
+> (ips->machines "192.168.74.100-254" "1-443" "t")
+> (all-tports)
+> (all-tports)
+IP: 192.168.74.164
+Open TCP ports:
 
-We would like a couple components to be involved in our demo. We will create a private network using several virtual machines exposing a variety of services that we will scan against. Some services/machines will be protected by firewalls and we will discuss the implications. We will also scan several internet facing sites that could be considered kosher to scan, ie http://scanme.nmap.org or google's public DNS servers such as 8.8.8.8
+IP: 192.168.74.185
+Open TCP ports:
+	23	(Telnet)
+	21	(FTP -- Control)
+	25	(Simple Mail Transfer Protocol (SMTP))
+	22	(SSH Remote Login Protocol)
+	80	(HTTP)
+	139	(NetBIOS Datagram Service)
 
-We will compare results of our scanner to actual open ports of the systems using netstat.
-We would also like to directly compare our program to NMap, the defacto go-to opensource network scannner. We would like to compare the accuracy of our results and the runtime.
+IP: 192.168.74.135
+Open TCP ports:
+	139	(NetBIOS Datagram Service)
+	22	(SSH Remote Login Protocol)
+	80	(HTTP)
+
+IP: 192.168.74.182
+Open TCP ports:
+	21	(FTP -- Control)
+	58	(XNS mail)
+	80	(HTTP)
+
+IP: 192.168.74.184
+Open TCP ports:
+	139	(NetBIOS Datagram Service)
+	23	(Telnet)
+	111	(ONC RNC)
+	21	(FTP -- Control)
+	25	(Simple Mail Transfer Protocol (SMTP))
+	53	(Domain Name System (DNS))
+	22	(SSH Remote Login Protocol)
+	80	(HTTP)
+
+IP: 192.168.74.183
+Open TCP ports:
+	180	
+	106	
+	110	(POP3)
+	25	(Simple Mail Transfer Protocol (SMTP))
+	79	(Finger)
+	135	
+	139	(NetBIOS Datagram Service)
+ ```
 
 ### Evaluation of Results
-Since we will be building our private network using virtual machines we will have access to the ports open on the machine. We can compare the results of our scanner with that of NMap as well as reference the machines port listing using netstat. A succesfull product means we should see results of our scans matching expectations.
 
-We are looking to match common services with port numbers, but won't be doing any form of version detection. That means we could use netcat to open up port 80 on a virtual machine and our scanner would detect it as a generic web server.
+> Compare virtual network results with that of NMap
 
 ## Architecture Diagram
-![low resolution](/Low_Res.png?raw=true "low res architecture")
 
-![high resolution](/machineObject.png?raw=true "whiteboard environemt diagram")
-
-![high resolution](/High_Res.png?raw=true "high res architecture")
-
+> new diagram
 
 The goal is to create objects which form closures to over IP addresses and open ports of the machine, these objects being an abstraction for a host over a network.
  
@@ -84,29 +122,6 @@ Using symbolic differentiation and message passing we interact with the machine 
 
 ## Schedule
 
-### Major components and challenges breakdown
-* threading
-* custodians
-* exception handling
-* UDP
-* TCP
-* Machine object
-  * constructor
-  * accessors
-  * mutators (scanner procedure)
-* Stretch goal 
-  * subnet object
-* Super stretch goal
-  * file transfers and message passing over socket connection, emulating NCat
-* Super, SUPER stretch goal 
-  * SSL option, emulating NCat
-* Can we?
-  * compile our racket program into an executable file
-   * on a seperate machine open a port using netcat to redirect input into new executable file.
-   * using *RCat* on original host machine push the compiled executable binary to the waiting machine
-   * on waiting machine run compiled binary
-   * two copies of RC
-  
 
 ### First Milestone (Sun Apr 9)
 * Machine Object with procedure stubs
