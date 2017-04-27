@@ -122,7 +122,7 @@
                       (begin (printf "\t~a\t" openport)
                                  (for-each (lambda (x) (cond ((string=? (car x) (number->string openport)) (display (cdr x))))) tport-to-service)) (display "\n"))
                     tport-list))
-  (define (probe-udp ip port)
+  (define (probe-udp port)
     (thread (lambda ()
               (if
                (udp-connect! udp-socket ip port) (add-udp port) "No connection detected"))))
@@ -140,7 +140,10 @@
          ((eq? (car message) 'tport) (check-tport (cadr message)) )
          ((eq? (car message) 'uport) (check-uport (cadr message)) )
          (else error "Bad moves, dude")))
-  (begin (map (lambda (x) (probe-tcp x)) (enum-ports ports)) dispatch))
+  (begin (if (string=? protocols "t")
+             (map (lambda (x) (probe-tcp x)) (enum-ports ports))
+             (map (lambda (x) (probe-udp x)) (enum-ports ports)))
+         dispatch))
 
 ;; break a range up ports in form "1-443"
 ;; return a list of numbers
