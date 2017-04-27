@@ -1,7 +1,12 @@
 1	TCP Port Service Multiplexer (TCPMUX)
 5	Remote Job Entry (RJE)
 7	ECHO
+9 Discard Protocol
+11  Active Users (sysat service)
+13  Daytime Protocol
+17  Quote of the Day
 18	Message Send Protocol (MSP)
+19  Character Generator Protocol
 20	FTP -- Data
 21	FTP -- Control
 22	SSH Remote Login Protocol
