@@ -3,8 +3,7 @@
 (require racket/tcp)
 (require racket/udp)
 (define machine-list '())
-;; UDP ports should be stored within the closure of the individual machine object
-(define machine-udp-list '())
+
 
 ;; preparing port matching file by splitting the file into a list of string
 (define tcp_port_match(file->lines "common_tcp_ports.txt"))
@@ -73,7 +72,7 @@
 (define (all-uports)
   (for-each (lambda (machine-dispatch) 
               (begin (printf "IP: ~a\nOpen UDP ports:\n" (machine-dispatch '(ip))) (machine-dispatch '(uports)) (printf "\n")) )
-            machine-udp-list))
+            machine-list))
 
 ; convert from range of ips to a list of ips
 ; (range->list "192.168.1-15") -> '("192.168.1.1" ... "192.168.1.15")
@@ -103,7 +102,8 @@
 (define (machine ip ports protocols)
   (define open-tcp '())
   (define open-udp '())
-  (define (add-upd port)
+  (define udp-socket (udp-open-socket) ) 
+  (define (add-udp port)
     (set! open-udp (cons port open-udp)))
   (define (add-tcp port)
     (set! open-tcp (cons port open-tcp)))
@@ -122,7 +122,10 @@
                       (begin (printf "\t~a\t" openport)
                                  (for-each (lambda (x) (cond ((string=? (car x) (number->string openport)) (display (cdr x))))) tport-to-service)) (display "\n"))
                     tport-list))
-  (define (probe-udp ip port) "stub")
+  (define (probe-udp ip port)
+    (thread (lambda ()
+              (if
+               (udp-connect! udp-socket ip port) (add-udp port) "No connection detected"))))
   (define (probe-tcp port)
     (thread (lambda () (with-handlers ([exn:fail? (lambda (exn) exn )])
                          (if
