@@ -64,13 +64,22 @@ Powerful quote from SICP
 > "It may seem disturbing that we refer to a recursive procedure such as fact-iter as generating an iterative process.However, the process really is iterative: Its state is captured completely by its three state variables, and an interpreter need keep track of only three variables in order to execute the process."
 
 
-> Will you use recursion? How?
-- Information about open and closed ports is presented by recursing down their respective lists and matching those numbers to a list of respective servers.
-We have created threaded procedures to make connection attempts. These procedures will be evaluated by combining them into a list of targeted   [missing words?]
+
+Information about open and closed ports is presented by recursing down their respective lists and matching those numbers to a list of respective servers. 
+```racket
+(define (all-tports)
+  (for-each
+   (lambda (machine-dispatch) (begin
+                                (printf "IP: ~a\nOpen TCP ports:\n" (machine-dispatch '(ip)))
+                                (machine-dispatch '(tports))
+                                (printf "\n")))
+   machine-list))
+   
+```
 
 
-> Will you build an expression evaluator, like we did in the symbolic differentatior and the metacircular evaluator?
-- We're using symbolic differentiation to evaluate procedures associated with the object, ie when we call our scanner we pass to it an IP, a list of ports and a list of protocols. These arguments are evaluated within the context of the machine object; passing a 't' signifies that we will be doing TCP, passing '(80) will scan a single port vs '(1 80) two ports vs '(1 - 80) range of ports
+
+We're using symbolic differentiation to evaluate procedures associated with the object, ie when we call our scanner we pass to it an IP, a list of ports and a list of protocols. These arguments are evaluated within the context of the machine object; passing a 't' signifies that we will be doing TCP, passing '(80) vs '(1 - 80) range of ports
 
 ### External Technologies
 TCP and UDP 
