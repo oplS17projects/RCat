@@ -59,32 +59,28 @@ that forms a closure over over the address and its open ports.
         (enum-range-halper (add1 a) b (append total (list a) ))))
   (enum-range-halper a b '()))
 ```
+
 Powerful quote from SICP
 > "It may seem disturbing that we refer to a recursive procedure such as fact-iter as generating an iterative process.However, the process really is iterative: Its state is captured completely by its three state variables, and an interpreter need keep track of only three variables in order to execute the process."
 
-
-
-
-> Will you use data abstraction? How?
-- We abstract individual IP addresses as 'Machine' objects and create a closure over the IP ( stored as a string ), a list of open TCP ports and a list of IP ports.
 
 > Will you use recursion? How?
 - Information about open and closed ports is presented by recursing down their respective lists and matching those numbers to a list of respective servers.
 We have created threaded procedures to make connection attempts. These procedures will be evaluated by combining them into a list of targeted   [missing words?]
 
-> Will you use map/filter/reduce? How? 
-- At evaluation our machine object creates a list of ports to scan. This list is then mapped over by the individiual scan procedure, which creates a threaded connection attempt against the IP and port. 
-Our lists of open ports is filtered over by the accessor procedures of the machine object to return appropriate information about the machine. 
-ie (machine1 'open-port? '(22 80)) filters our list of open ports for port 22 and port 80.
-The result is applied to another filter which maps over a list of pairings between ports and services and returns the matching port and service of the opened port
-> Will you use functional approaches to processing your data? How?
-- The intent is to recurse across all of our data structures during evaluations. We are actively avoiding using set! in favor of creating data structures that we recurse across.
 
 > Will you build an expression evaluator, like we did in the symbolic differentatior and the metacircular evaluator?
 - We're using symbolic differentiation to evaluate procedures associated with the object, ie when we call our scanner we pass to it an IP, a list of ports and a list of protocols. These arguments are evaluated within the context of the machine object; passing a 't' signifies that we will be doing TCP, passing '(80) will scan a single port vs '(1 80) two ports vs '(1 - 80) range of ports
 
 ### External Technologies
-TCP and UDP discussion
+TCP and UDP 
+TCP is a stateful protocol, it follows a set of rules governing connections. In order for a connection
+to be established both client and server send a sequence of packets to one another (SYN/ACK) that set up 
+handlers for speaking to one another.
+
+UDP is a connectionless protocol and is much harder to determing whether a port is acception connections or not.
+Think of video streaming (which happens over UDP) it doesn't matter if you miss a little bit of information during
+the process in fact 
 
 ### Data Sets or other Source Materials
 RCat can be used on LOCALHOST (our own machine can be found at 127.0.0.1)
@@ -93,13 +89,12 @@ We have created a list of common ports and matching service in a tab delimited t
 http://web.mit.edu/rhel-doc/4/RH-DOCS/rhel-sg-en-4/ch-ports.html
 
 Virtual Network built out with VMWare Fusion and the following machines
-  * link Lowell VMWare store 
-  * link Lubuntu
-  * link kali linux
-  * link metasploitable
-  * link de-ice
-  * link kioptrix
-  * link vulnhub
+  * Lubuntu
+  * kali linux
+  * metasploitable 1
+  * metasploitable 2
+  * kioptrix
+
 
 
 ### Deliverable and Demonstration
@@ -157,49 +152,19 @@ Open TCP ports:
 
 ### Evaluation of Results
 
-> Compare virtual network results with that of NMap
+Our port scan matches that of NMap for TCP.
+Because of the connectionless nature of UDP, the results of UDP scans are unreliable.
+The issues can be recreated in NMap as well, NMap evaluates false positives consistently.
 
 ## Architecture Diagram
 
 ![Arch diagram](/demo/Projecet_Diagram.png?raw=true "Arch diagram")
 
-The goal is to create objects which form closures to over IP addresses and open ports of the machine, these objects being an abstraction for a host over a network.
+RCat creates objects which form closures to over IP addresses and open ports of the machine, these objects being an abstraction for a host over a network.
  
-Using racket/tcp and racket/udp libraries and threading we will create connection attempts with ports of a target machine, and depending on the response determine if chosen ports are open or not.
+Using racket/tcp and racket/udp libraries and threading we create connection attempts with ports on a target machine, and depending on the response determine if chosen ports are open or not.
   
-If the ports are open we add them to the respective list of open ports.
+If the ports are open we add them to the respective list of open ports. Because the non-deterministic nature
+of network packets, our list of machines acts as a stack.
 
 Using symbolic differentiation and message passing we interact with the machine object to retrieve information.
-
-
-## Schedule
-
-
-### First Milestone (Sun Apr 9)
-* Machine Object with procedure stubs
- * constructor
- * accessors
- * scanner object stub
-
-
-### Second Milestone (Sun Apr 16)
-* data preparation complete for matching port number to service
-* properly differentiating dropped connections from accepted connections
-
-### Public Presentation (Mon Apr 24, Wed Apr 26, or Fri Apr 28 [your date to be determined later])
-* Threading
-* Building out network of virtual machines for demonstration
-
-## Group Responsibilities
-
-### Josh Everett @josh-everett
-* test stub for _machine_ class constructor
-* completing tcp connection acceptance/drop
-* scanner object threading
-* VM network
-
-
-### Jennifer Green @goldenapplepie
-* completing udp connection acceptance/drop
-* creating data structures for holding port data list
-* matching port data against list of known ports
