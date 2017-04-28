@@ -15,9 +15,9 @@ Our project allows the option of several layers abstraction ,
   * Our machine object is a closure over an IP address, lists of open ports, and several procedures
   
       
-Because we both elements of our program form closures over lists we use map and variations of map constantly.
+Because both elements of our program form closures over lists we use map and variations of map constantly.
   
-  * breaking apart ranges of IP addresses.
+  * Breaking apart ranges of IP addresses.
   
 ```racket
 ; convert from range of ips to a list of ips
@@ -47,7 +47,7 @@ that forms a closure over over the address and its open ports.
     (for-each (lambda (target-ip) (probe-ping target-ip) ) (range->list targets)))
 ```
 
-  * breaking apart port ranges we use both map recursive procedure to create an iterative process
+By breaking apart port ranges we use both map recursive procedure to create an iterative process
   
 ```racket
 ; from ps3c
@@ -64,8 +64,8 @@ Powerful quote from SICP
 > "It may seem disturbing that we refer to a recursive procedure such as fact-iter as generating an iterative process.However, the process really is iterative: Its state is captured completely by its three state variables, and an interpreter need keep track of only three variables in order to execute the process."
 
 
-
 Information about open and closed ports is presented by recursing down their respective lists and matching those numbers to a list of respective servers. 
+
 ```racket
 (define (all-tports)
   (for-each
@@ -76,8 +76,6 @@ Information about open and closed ports is presented by recursing down their res
    machine-list))
    
 ```
-
-
 
 We're using symbolic differentiation to evaluate procedures associated with the object, ie when we call our scanner we pass to it an IP, a list of ports and a list of protocols. These arguments are evaluated within the context of the machine object; passing a 't' signifies that we will be doing TCP, passing '(80) vs '(1 - 80) range of ports
 
@@ -103,7 +101,6 @@ Virtual Network built out with VMWare Fusion and the following machines
   * metasploitable 1
   * metasploitable 2
   * kioptrix
-
 
 
 ### Deliverable and Demonstration
