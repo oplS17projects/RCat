@@ -6,7 +6,45 @@ Capable of scanning a single or multiple machines over a network for open TCP po
 Multiple machines over a /24 network may be scanned, but are subject to a ICMP ping before they are considered valid.
 UDP scanning is functional and unreliable as we discuss.
 
-### Analysis
+### Analysis of functional approaches and OPL concepts
+
+
+Our project allows the option of several layers abstraction , 
+  * Our 'subnet' objects are a closure over a list of machines we have pinged 
+      and determined to be alive and several procedures.
+  * Our machine object is a closure over an IP address, lists of open ports, and several procedures
+      
+Because we both elements of our program form closures over lists we use map and variations of map constantly.
+  * breaking apart ranges of IP addresses.
+```racket
+; convert from range of ips to a list of ips
+; (range->list "192.168.1-15") -> '("192.168.1.1" ... "192.168.1.15")
+(define (range->list targets)
+  (let*((range(regexp-split #rx"-" targets))
+        (octets (regexp-split #rx"\\." (car range)))
+        (three-octets (string-append (car octets) "." (cadr octets) "." (caddr octets) "."))
+        (start (cadddr octets))
+        (end (cadr range))
+        (individual-machines-int (enum-range-i (string->number start) (string->number end)) )
+        (individual-machines-string (map number->string individual-machines-int))
+        (subnet (map (lambda (x) (string-append three-octets x)) individual-machines-string) ))
+    subnet))
+    ```
+  
+  * breaking apart port ranges we use both map recursive procedure to create an iterative process
+  
+```racket
+; from ps3c
+; iterative function to create and return a list of number sequentially within a given range
+(define (enum-range-i a b)
+  (define (enum-range-halper a b total)
+    (if (> a b)
+        total
+        (enum-range-halper (add1 a) b (append total (list a) ))))
+  (enum-range-halper a b '()))
+```
+Powerful quote from SICP
+"It may seem disturbing that we refer to a recursive procedure such as fact-iter as generating an iterative process.However, the process really is iterative: Its state is captured completely by its three state variables, and an interpreter need keep track of only three variables in order to execute the process."
 
 > Will you use data abstraction? How?
 - We plan to abstract individual IP addresses as 'Machine' objects and create a closure over the IP ( stored as a string ), a list of open TCP ports and a list of IP ports.
