@@ -9,17 +9,17 @@ Hackerman is a network scanner for TCP with basic service to port mapping.
 - We abstracted individual IP addresses as 'Machine' objects and created a closure over the IP ( stored as a string ), a list of open TCP ports and a list of IP ports.
 
 > Will you use recursion? How?
-- Information about open and closed ports will be presented by recursing down their respective lists and matching those numbers to a list of respective servers.
-We will be creating threaded procedures to make connection attempts. These procedures will be evaluated by combining them into a list of targeted 
+- Information about open and closed ports is presented by recursing down their respective lists and matching those numbers to a list of respective servers.
+We created threaded procedures to make connection attempts. These procedures are evaluated by combining them into a list of targeted    [Words missing?]
 
 > Will you use map/filter/reduce? How? 
-- At evaluation our machine object will create a list of ports to scan. This list will be mapped over by the individiual scan procedure, which will create a threaded connection attempt against the IP and port. 
-Our lists of open ports will be filtered over by the accessor procedures of the machine object to return appropriate information about the machine. 
-ie (machine1 'open-port? '(22 80)) will filter our list of open ports for port 22 and port 80.
-The result will be applied to another filter which maps over a list of pairings between ports and services and returns the matching port and service of opened ports.
+- At evaluation our machine object creates a list of ports to scan. This list is mapped over by the individiual scan procedure, which creates a threaded connection attempt against the IP and port. 
+Our lists of open ports are filtered over by the accessor procedures of the machine object to return appropriate information about the machine. 
+ie (machine1 'open-port? '(22 80)) filters our list of open ports for port 22 and port 80.
+The result is applied to another filter which maps over a list of pairings between ports and services and returns the matching port and service of opened ports.
 
 > Will you use object-orientation? How?
-- Machine objects are the fundamental building block of our project. Ideally we would like to be able to differentiate individual machines from subnets or ranges of machines.
+- Machine objects are the fundamental building block of our project. We are able to differentiate individual machines from subnets or ranges of machines.
 192.168.1.1 vs 192.168.1.1/24
 
 > Will you use functional approaches to processing your data? How?
