@@ -68,7 +68,7 @@
                                 (printf "\n")))
    machine-list))
 
-;    >>>>>>>>>>NEEDS TESTING<<<<<<<<<<<<
+; Print out ip and udp port of every machine in machine-list
 (define (all-uports)
   (for-each (lambda (machine-dispatch) 
               (begin (printf "IP: ~a\nOpen UDP ports:\n" (machine-dispatch '(ip))) (machine-dispatch '(uports)) (printf "\n")) )
@@ -122,6 +122,8 @@
                       (begin (printf "\t~a\t" openport)
                                  (for-each (lambda (x) (cond ((string=? (car x) (number->string openport)) (display (cdr x))))) tport-to-service)) (display "\n"))
                     tport-list))
+  
+  ;  This is currently broken and will return positive for every udp port regardless of if they're actually open or not.  
   (define (probe-udp port)
     (thread (lambda ()
               (if
