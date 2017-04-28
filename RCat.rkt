@@ -7,7 +7,6 @@
 
 ;; preparing port matching file by splitting the file into a list of string
 (define tcp_port_match(file->lines "common_tcp_ports.txt"))
-(define udp_port_match(file->lines "common_udp_ports.txt"))
 (for-each (lambda (x) (regexp-split #rx"\t" x)) tcp_port_match)
 (define udp_port_match(file->lines "common_udp_ports.txt"))
 (for-each (lambda (x) (regexp-split #rx"\t" x)) udp_port_match)
