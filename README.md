@@ -1,12 +1,12 @@
-# RCat
+# Hackerman
 
 ### Statement
-RCat aims to be a network scanner for both TCP and UDP with basic service to port mapping.
+Hackerman is a network scanner for TCP with basic service to port mapping.
 
 ### Analysis
 
 > Will you use data abstraction? How?
-- We plan to abstract individual IP addresses as 'Machine' objects and create a closure over the IP ( stored as a string ), a list of open TCP ports and a list of IP ports.
+- We abstracted individual IP addresses as 'Machine' objects and created a closure over the IP ( stored as a string ), a list of open TCP ports and a list of IP ports.
 
 > Will you use recursion? How?
 - Information about open and closed ports will be presented by recursing down their respective lists and matching those numbers to a list of respective servers.
