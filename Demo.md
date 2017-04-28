@@ -13,9 +13,12 @@ Our project allows the option of several layers abstraction ,
   * Our 'subnet' objects are a closure over a list of machines we have pinged 
       and determined to be alive and several procedures.
   * Our machine object is a closure over an IP address, lists of open ports, and several procedures
+  
       
 Because we both elements of our program form closures over lists we use map and variations of map constantly.
+  
   * breaking apart ranges of IP addresses.
+  
 ```racket
 ; convert from range of ips to a list of ips
 ; (range->list "192.168.1-15") -> '("192.168.1.1" ... "192.168.1.15")
@@ -29,8 +32,21 @@ Because we both elements of our program form closures over lists we use map and 
         (individual-machines-string (map number->string individual-machines-int))
         (subnet (map (lambda (x) (string-append three-octets x)) individual-machines-string) ))
     subnet))
-    ```
-  
+```
+At construction of our subnet object we map over a list of potential IP addresses 
+making system calls to the ping target before we create an individual machine object
+that forms a closure over over the address and its open ports.
+
+```racket
+(define (probe-ping addr)
+    (thread (lambda ()
+              (let ((ping-input '()))
+                (if (regexp-match? #rx".*64.*" (read-string 4096 (car (process (string-append "ping -c 3 " addr)))))
+                    (set! machine-list (cons (machine addr ports protocols) machine-list))
+                    "No connection detected")))))
+    (for-each (lambda (target-ip) (probe-ping target-ip) ) (range->list targets)))
+```
+
   * breaking apart port ranges we use both map recursive procedure to create an iterative process
   
 ```racket
@@ -46,6 +62,9 @@ Because we both elements of our program form closures over lists we use map and 
 Powerful quote from SICP
 "It may seem disturbing that we refer to a recursive procedure such as fact-iter as generating an iterative process.However, the process really is iterative: Its state is captured completely by its three state variables, and an interpreter need keep track of only three variables in order to execute the process."
 
+
+
+
 > Will you use data abstraction? How?
 - We plan to abstract individual IP addresses as 'Machine' objects and create a closure over the IP ( stored as a string ), a list of open TCP ports and a list of IP ports.
 
@@ -57,12 +76,7 @@ We will be creating threaded procedures to make connection attempts. These proce
 - At evaluation our machine object will create a list of ports to scan. This list will be mapped over by the individiual scan procedure, which will create a threaded connection attempt against the IP and port. 
 Our lists of open ports will be filtered over by the accessor procedures of the machine object to return appropriate information about the machine. 
 ie (machine1 'open-port? '(22 80)) will filter our list of open ports for port 22 and port 80.
-The result will be applied to another filter which maps over a list of pairings between ports and services and returns the matching port and service of opened ports.
-
-> Will you use object-orientation? How?
-- Machine objects are the fundamental building block of our project. Ideally we would like to be able to differentiate individual machines from subnets or ranges of machines.
-192.168.1.1 vs 192.168.1.1/24
-
+The result will be applied to another filter which maps over a list of pairings between ports and services and returns the matching port and service of opened port
 > Will you use functional approaches to processing your data? How?
 - The intent is to recurse across all of our data structures during evaluations. We will actively be avoiding using set! in favor of creating data structures that we rucurse across.
 
