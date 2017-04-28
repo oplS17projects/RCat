@@ -1,10 +1,10 @@
 # RCat
 
 ### Statement
-RCat is a port scanner scanner that can do basic port to service matching. 
-Capable of scanning a single or multiple machines over a network for open TCP ports. 
-Multiple machines over a /24 network may be scanned, but are subject to a ICMP ping before they are considered valid.
-UDP scanning is functional and unreliable as we discuss.
+- RCat is a port scanner scanner that can do basic port to service matching. 
+- Capable of scanning a single or multiple machines over a network for open TCP ports. 
+- Multiple machines over a /24 network may be scanned, but are subject to a ICMP ping before they are considered valid.
+- UDP scanning is functional and unreliable as we discuss.
 
 ### Analysis of functional approaches and OPL concepts
 
@@ -103,7 +103,7 @@ Virtual Network built out with VMWare Fusion and the following machines
 
 
 ### Deliverable and Demonstration
-![net diagram](/demo/Project_diagram.png?raw=true "test network diagram")
+![net diagram](/demo/network_diagram.png?raw=true "test network diagram")
 
 ```racket
 > (ips->machines "192.168.74.100-254" "1-443" "t")
@@ -161,7 +161,7 @@ Open TCP ports:
 
 ## Architecture Diagram
 
-![Arch diagram](/demo/architecture_diagram.png?raw=true "Arch diagram")
+![Arch diagram](/demo/Project_Diagram.png?raw=true "Arch diagram")
 
 The goal is to create objects which form closures to over IP addresses and open ports of the machine, these objects being an abstraction for a host over a network.
  
