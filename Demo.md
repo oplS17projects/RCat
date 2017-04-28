@@ -60,7 +60,7 @@ that forms a closure over over the address and its open ports.
   (enum-range-halper a b '()))
 ```
 Powerful quote from SICP
-"It may seem disturbing that we refer to a recursive procedure such as fact-iter as generating an iterative process.However, the process really is iterative: Its state is captured completely by its three state variables, and an interpreter need keep track of only three variables in order to execute the process."
+> "It may seem disturbing that we refer to a recursive procedure such as fact-iter as generating an iterative process.However, the process really is iterative: Its state is captured completely by its three state variables, and an interpreter need keep track of only three variables in order to execute the process."
 
 
 
@@ -93,16 +93,18 @@ We have created a list of common ports and matching service in a tab delimited t
 http://web.mit.edu/rhel-doc/4/RH-DOCS/rhel-sg-en-4/ch-ports.html
 
 Virtual Network built out with VMWare Fusion and the following machines
-> link Lowell VMWare store 
-> link Lubuntu
-> link kali linux
-> link metasploitable
-> link de-ice
-> link kioptrix
-> link vulnhub
+  * link Lowell VMWare store 
+  * link Lubuntu
+  * link kali linux
+  * link metasploitable
+  * link de-ice
+  * link kioptrix
+  * link vulnhub
 
 
 ### Deliverable and Demonstration
+![net diagram](/demo/network_diagram.png?raw=true "test network diagram")
+
 ```racket
 > (ips->machines "192.168.74.100-254" "1-443" "t")
 > (all-tports)
@@ -159,7 +161,7 @@ Open TCP ports:
 
 ## Architecture Diagram
 
-> new diagram
+![Arch diagram](/demo/architecture_diagram.png?raw=true "Arch diagram")
 
 The goal is to create objects which form closures to over IP addresses and open ports of the machine, these objects being an abstraction for a host over a network.
  
@@ -168,8 +170,6 @@ Using racket/tcp and racket/udp libraries and threading we will create connectio
 If the ports are open we add them to the respective list of open ports.
 
 Using symbolic differentiation and message passing we interact with the machine object to retrieve information.
-
-
 
 
 ## Schedule
