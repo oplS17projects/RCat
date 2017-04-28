@@ -66,22 +66,22 @@ Powerful quote from SICP
 
 
 > Will you use data abstraction? How?
-- We plan to abstract individual IP addresses as 'Machine' objects and create a closure over the IP ( stored as a string ), a list of open TCP ports and a list of IP ports.
+- We abstract individual IP addresses as 'Machine' objects and create a closure over the IP ( stored as a string ), a list of open TCP ports and a list of IP ports.
 
 > Will you use recursion? How?
-- Information about open and closed ports will be presented by recursing down their respective lists and matching those numbers to a list of respective servers.
-We will be creating threaded procedures to make connection attempts. These procedures will be evaluated by combining them into a list of targeted 
+- Information about open and closed ports is presented by recursing down their respective lists and matching those numbers to a list of respective servers.
+We have created threaded procedures to make connection attempts. These procedures will be evaluated by combining them into a list of targeted   [missing words?]
 
 > Will you use map/filter/reduce? How? 
-- At evaluation our machine object will create a list of ports to scan. This list will be mapped over by the individiual scan procedure, which will create a threaded connection attempt against the IP and port. 
-Our lists of open ports will be filtered over by the accessor procedures of the machine object to return appropriate information about the machine. 
-ie (machine1 'open-port? '(22 80)) will filter our list of open ports for port 22 and port 80.
-The result will be applied to another filter which maps over a list of pairings between ports and services and returns the matching port and service of opened port
+- At evaluation our machine object creates a list of ports to scan. This list is then mapped over by the individiual scan procedure, which creates a threaded connection attempt against the IP and port. 
+Our lists of open ports is filtered over by the accessor procedures of the machine object to return appropriate information about the machine. 
+ie (machine1 'open-port? '(22 80)) filters our list of open ports for port 22 and port 80.
+The result is applied to another filter which maps over a list of pairings between ports and services and returns the matching port and service of the opened port
 > Will you use functional approaches to processing your data? How?
-- The intent is to recurse across all of our data structures during evaluations. We will actively be avoiding using set! in favor of creating data structures that we rucurse across.
+- The intent is to recurse across all of our data structures during evaluations. We are actively avoiding using set! in favor of creating data structures that we recurse across.
 
 > Will you build an expression evaluator, like we did in the symbolic differentatior and the metacircular evaluator?
-- We will be using symbolic differentiation to evaluate procedures associated with the object, ie when we call our scanner we pass to it an IP, a list of ports and a list of protocols. These arguments will be evaluated within the context of the machine object; passing a 't' signifies that we will be doing TCP, passing '(80) will scan a single port vs '(1 80) two ports vs '(1 - 80) range of ports
+- We're using symbolic differentiation to evaluate procedures associated with the object, ie when we call our scanner we pass to it an IP, a list of ports and a list of protocols. These arguments are evaluated within the context of the machine object; passing a 't' signifies that we will be doing TCP, passing '(80) will scan a single port vs '(1 80) two ports vs '(1 - 80) range of ports
 
 ### External Technologies
 TCP and UDP discussion
