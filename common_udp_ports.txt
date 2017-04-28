@@ -1,1 +1,71 @@
-
+1	TCP Port Service Multiplexer (TCPMUX)
+5	Remote Job Entry (RJE)
+7	ECHO
+9 	Discard Protocol
+9 Wake-on-LAN
+11	Active Users (sysat service)
+13 	Daytime Protocol
+17 	Quote of the Day
+18	Message Send Protocol (MSP)
+19 	Character Generator Protocol
+20	FTP -- Data
+21	FTP -- Control
+22	SSH Remote Login Protocol
+23	Telnet
+25	Simple Mail Transfer Protocol (SMTP)
+29	MSG ICP
+37	Time
+42	Host Name Server (Nameserv)
+43	WhoIs
+49	Login Host Protocol (Login)
+50  	Remote Mail Checking
+53	Domain Name System (DNS)
+52	XNS Time Protocol
+54  	XNS clearinghouse
+56	XNS authentication
+58	XNS mail
+67	Bootstrap Protocol server
+68	Bootstrap Protocol client
+69	Trivial File Transfer Protocol (TFTP)
+70	Gopher Services
+71	NETRJS Protocol
+72	NETRJS Protocol
+73	NETRJS Protocol
+74	NETRJS Protocol
+79	Finger
+80	HTTP
+80  QUIC
+82  TorPark control
+88	Kerberos authentication
+101	NIC host name
+102	ISO Transport Service Access Point
+103	X.400 Standard
+104	DICOM
+105	CCSO Nameserver
+107	RTelnet
+108	SNA Gateway Access Server
+109	POP2
+110	POP3
+111	ONC RNC
+115	Simple File Transfer Protocol (SFTP)
+118	SQL Services
+119	Newsgroup (NNTP)
+137	NetBIOS Name Service
+139	NetBIOS Datagram Service
+143	Interim Mail Access Protocol (IMAP)
+150	NetBIOS Session Service
+156	SQL Server
+161	SNMP
+179	Border Gateway Protocol (BGP)
+190	Gateway Access Control Protocol (GACP)
+194	Internet Relay Chat (IRC)
+197	Directory Location Service (DLS)
+389	Lightweight Directory Access Protocol (LDAP)
+396	Novell Netware over IP
+443	HTTPS
+444	Simple Network Paging Protocol (SNPP)
+445	Microsoft-DS
+458	Apple QuickTime
+546	DHCP Client
+547	DHCP Server
+563	SNEWS
