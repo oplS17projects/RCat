@@ -161,7 +161,7 @@ Open TCP ports:
 
 ## Architecture Diagram
 
-![Arch diagram](/demo/Project_Diagram.png?raw=true "Arch diagram")
+![Arch diagram](/demo/Projecet_Diagram.png?raw=true "Arch diagram")
 
 The goal is to create objects which form closures to over IP addresses and open ports of the machine, these objects being an abstraction for a host over a network.
  
