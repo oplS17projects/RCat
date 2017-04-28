@@ -103,7 +103,7 @@ Virtual Network built out with VMWare Fusion and the following machines
 
 
 ### Deliverable and Demonstration
-![net diagram](/demo/network_diagram.png?raw=true "test network diagram")
+![net diagram](/demo/Project_diagram.png?raw=true "test network diagram")
 
 ```racket
 > (ips->machines "192.168.74.100-254" "1-443" "t")
