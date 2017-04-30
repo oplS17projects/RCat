@@ -1,11 +1,13 @@
 
-# Interface to Google Drive in Racket
+# Port Scanning and other Security applications with Racket
 
 ## Josh Everett 
 ### April 29, 2017
 
 # Overview
-Our program 
+The main component of our program is an application which can scan a target /24 subnet for active IP
+addresses and compile a list of active ports within a desired range. The list of open ports can be
+fed to a pattern matching function that maps a port to the name of the service associated with that port.
 
 **Authorship note:** All of the code described here was written by myself.
 
@@ -17,54 +19,51 @@ The code uses four libraries:
 (require racket/udp)
 ```
 
-Both the tcp and udp racket libraries provide the ability to make connection attempts against the 
+Both the tcp and udp racket libraries provide functionality to create connection attempts with a given port and 
+IP address over each protocol.
+
 # Key Code Excerpts
 
-Here is a discussion of the most essential procedures, including a description of how they embody ideas from 
-UMass Lowell's COMP.3010 Organization of Programming languages course.
+Below are individually labled segments of code from the project that embody key concepts from our OPL class.
 
-Five examples are shown and they are individually numbered. 
+## 1. Closures over and individual machine object.
 
-## 1. Initialization using a Global Object
+The smallest element of our program is the Machine object which forms a closure over three arguments used 
+in the creation of the object. All arguments are passed as strings, but differntiation between the strings
+allows for dynamic run time behaviour. 
 
-The following code creates a global object, ```drive-client``` that is used in each of the subsequent API calls:
+```racket 
+(define (machine ip ports protocols)
 
-```
-(define drive-client
-  (oauth2-client
-   #:id "548798434144-6s8abp8aiqh99bthfptv1cc4qotlllj6.apps.googleusercontent.com"
-   #:secret "<email me for secret if you want to use my API>"))
+...
+
+  (begin (if (string=? protocols "t")
+             (map (lambda (x) (probe-tcp x)) (enum-ports ports))
+             (map (lambda (x) (probe-udp x)) (enum-ports ports)))
+         dispatch))
  ```
+A dozen or so lines have been gutted from the previous definition for the sake of brevity. We just need the understanding
+that our machine object constructor evaluates differentely between "t" and "u" protocols-- and that the result of 
+evaluating a machine procedure is a dispatch procedure that allows for message passing.
  
- While using global objects is not a central theme in the course, it's necessary to show this code to understand
- the later examples.
- 
-## 2. Selectors and Predicates using Procedural Abstraction
+## 2. Differentiation between a single and multiple addresses
 
-A set of procedures was created to operate on the core ```drive-file``` object. Drive-files may be either
-actual file objects or folder objects. In Racket, they are represented as a hash table.
+When the user interacts with the program they pass the target IP of their scan as a string - either a single address 
+or a range of addresses within a /24 subnet mask (ie "192.168.1.1-254" ).
+A range of IPs 
 
-```folder?``` accepts a ```drive-file```, inspects its ```mimeType```, and returns ```#t``` or ```#f```:
-
-```
-(define (folder? drive-file)
-  (string=? (hash-ref drive-file 'mimeType "nope") "application/vnd.google-apps.folder"))
-```
-
-Another object produced by the Google Drive API is a list of drive-file objects ("```drive#fileList```"). 
-When converted by the JSON library,
-this list appears as hash map. 
-
-```get-files``` retrieves a list of the files themselves, and ```get-id``` retrieves the unique ID
-associated with a ```drive#fileList``` object:
+```racket
+(define (ips->machines targets ports protocols)
+  (define (probe-ping addr)
+    (thread (lambda ()
+              (let ((ping-input '()))
+                (if (regexp-match? #rx".*64.*" (read-string 4096 (car (process (string-append "ping -c 3 " addr)))))
+                    (set! machine-list (cons (machine addr ports protocols) machine-list));add-machine-alive addr)
+                    "No connection detected")))))
+    (for-each (lambda (target-ip) (probe-ping target-ip) ) (range->list targets)))
 
 ```
-(define (get-files obj)
-  (hash-ref obj 'files))
 
-(define (get-id obj)
-  (hash-ref obj 'id))
-```
 ## 3. Using Recursion to Accumulate Results
 
 The low-level routine for interacting with Google Drive is named ```list-children```. This accepts an ID of a 
