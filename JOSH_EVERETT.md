@@ -37,6 +37,13 @@ allows for dynamic run time behaviour.
 
 ...
 
+  (define (dispatch message)
+    (cond((eq? (car message) 'tports) (display-tports open-tcp))
+         ((eq? (car message) 'uports) open-udp)
+         ((eq? (car message) 'ip) ip)
+         ((eq? (car message) 'tport) (check-tport (cadr message)) )
+         ((eq? (car message) 'uport) (check-uport (cadr message)) )
+         (else error "Bad moves, dude")))
   (begin (if (string=? protocols "t")
              (map (lambda (x) (probe-tcp x)) (enum-ports ports))
              (map (lambda (x) (probe-udp x)) (enum-ports ports)))
@@ -46,7 +53,7 @@ A dozen or so lines have been gutted from the previous definition for the sake o
 that our machine object constructor evaluates differentely between "t" and "u" protocols-- and that the result of 
 evaluating a machine procedure is a dispatch procedure that allows for message passing.
  
-## 2. Differentiation between a single and multiple addresses
+## 2. Expression evaluation ; differing between a single and multiple addresses
 
 When the user interacts with the program they pass the target IP of their scan as a string - either a single address 
 or a range of addresses within a /24 subnet mask (ie "192.168.1.1-254" ).
@@ -72,44 +79,18 @@ Because the connection attempts are threaded and our results will be non determi
 before matching the open ports to their services we recursively sort the port list returned by the
 machine's dispatch procedure
 
+```racket
+(define (sort-iter element port-list)
+    (cond((null? port-list) (cons element port-list))
+         ((< (car port-list) element) (cons (car port-list) (sort-iter element (cdr port-list))))
+         (else (cons element port-list))))
 ```
-(define (list-children folder-id . next-page-token)
-  (read-json
-   (get-pure-port
-    (string->url (string-append "https://www.googleapis.com/drive/v3/files?"
-                                "q='" folder-id "'+in+parents"
-                                "&key=" (send drive-client get-id)
-                                (if (= 1 (length next-page-token))
-                                    (string-append "&pageToken=" (car next-page-token))
-                                    "")
-;                                "&pageSize=5"
-                                ))
-    token)))
+
+```racket
+(define (display-tports list-of-ports)
+    (match-tports (foldr (lambda (p q) (sort-iter p q ) ) '() list-of-ports)))
 ```
-The interesting routine is ```list-all-children```. This routine is directly invoked by the user.
-It optionally accepts a page token; when it's used at top level this parameter will be null.
 
-The routine uses ```let*``` to retrieve one page of results (using the above ```list-children``` procedure)
-and also possibly obtain a token for the next page.
-
-If there is a need to get more pages, the routine uses ```append``` to pre-pend the current results with 
-a recursive call to get the next page (and possibly more pages).
-
-Ultimately, when there are no more pages to be had, the routine terminates and returns the current page. 
-
-This then generates a recursive process from the recursive definition.
-
-```
-(define (list-all-children folder-id . next-page-token)
-  (let* ((this-page (if (= 0 (length next-page-token))
-                      (list-children folder-id)
-                      (list-children folder-id (car next-page-token))))
-         (page-token (hash-ref this-page 'nextPageToken #f)))
-    (if page-token
-        (append (get-files this-page)
-              (list-all-children folder-id page-token))
-        (get-files this-page))))
-```
 
 ## 4. Filtering a List of File Objects for Only Those of Folder Type
 
