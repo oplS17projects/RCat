@@ -50,7 +50,9 @@ evaluating a machine procedure is a dispatch procedure that allows for message p
 
 When the user interacts with the program they pass the target IP of their scan as a string - either a single address 
 or a range of addresses within a /24 subnet mask (ie "192.168.1.1-254" ).
-A range of IPs 
+A range of IPs will be mapped over using the for-each procedure (as described by SICP, for-each is map
+but without the list being returned, it is only evaluated for the side effects of the procedure) to detmerine
+if the machine is alive.
 
 ```racket
 (define (ips->machines targets ports protocols)
@@ -64,14 +66,11 @@ A range of IPs
 
 ```
 
-## 3. Using Recursion to Accumulate Results
+## 3. Using Recursion to Organize Results
 
-The low-level routine for interacting with Google Drive is named ```list-children```. This accepts an ID of a 
-folder object, and optionally, a token for which page of results to produce.
-
-A lot of the work here has to do with pagination. Because it's a web interface, one can only obtain a page of
-results at a time. So it's necessary to step through each page. When a page is returned, it includes a token
-for getting the next page. The ```list-children``` just gets one page:
+Because the connection attempts are threaded and our results will be non deterministic
+before matching the open ports to their services we recursively sort the port list returned by the
+machine's dispatch procedure
 
 ```
 (define (list-children folder-id . next-page-token)
