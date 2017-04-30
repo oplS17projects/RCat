@@ -14,10 +14,6 @@
 (define tport-to-service (map (lambda (x) (regexp-split #rx"\t" x)) tcp_port_match))
 (define uport-to-service (map (lambda (x) (regexp-split #rx"\t" x)) udp_port_match))
 
-; refactor and comment
-; start poster writing
-; preparing code samples / documentation for readme 
-
 ;; example outoutput
 ;> (ips->machines "192.168.1.1-10" "1-443" "t")
 ;> (all-tports)
@@ -34,14 +30,12 @@
 
 (displayln "How to use RCat")
 (displayln "Usage for multiple machines :")
-(displayln "\t> (ips->machines \"192.168.1.1-10\" \"1-443\" \"t\")")
+(displayln "\t> (ips->machines \"192.168.74.100-254\" \"1-443\" \"t\")")
 (displayln "\t> (all-tports)")
 (displayln "Usage for single machine : ")
-(displayln "\t> (define router (machine \"192.168.1.1\" \"1-4096\" \"t\"))")
+(displayln "\t> (define router (machine \"192.168.74.185\" \"1-4096\" \"t\"))")
 (displayln "\t> (router '(tports))")
-           
-
-; Add more user guidance here
+(displayln "\t> (router '(tport \"80\"))")
 
 ; Checks to see if the user gives a single IP address or a range of IP addresses
 ; If given a range, each IP is subjected to a ICMP Ping to determine if the machine is alive or not to avoid unnecessary connection attempt with probes
@@ -116,30 +110,23 @@
     (if (memq (string->number port) open-tcp) #t #f))
   ; map across our list of open ports. For each port we print it out and then map across the list of strings loaded from the common ports text file
   ; we check every pair to see if it is the correct number then display the matching service if we find it.
-
-  ; redesign this as an accumulation?
-  ; accumulate across our list of open ports that will take the port number
-  ; and traverse the tport-to-service list, checking to see if we have the service.
-  ; if we do, print it.
-  (define (match-ports tport-list) (for-each (lambda (openport)
-                      (begin (printf "\t~a\t" openport)
-                                 (for-each (lambda (x) (cond ((string=? (car x) (number->string openport)) (display (cdr x))))) tport-to-service)) (display "\n"))
-                    tport-list))
-  
-  ;  This is currently broken and will return positive for every udp port regardless of if they're actually open or not.  
+  (define (display-tports list-of-ports)
+    (match-tports (foldr (lambda (p q) (sort-iter p q ) ) '() list-of-ports)))
   (define (probe-udp port)
     (thread (lambda ()
               (if
-               (udp-connect! udp-socket ip port) (add-udp port) "No connection detected"))))
+               (udp-connect! udp-socket ip port)
+               (add-udp port)
+               "No connection detected"))))
   (define (probe-tcp port)
-    (thread (lambda () (with-handlers ([exn:fail? (lambda (exn) exn )])
-                         (if
-                          (let-values (((input output) (tcp-connect ip port))) (list input output))
-                          (add-tcp port)
-                          "No connection detected")))))
+    (thread
+     (lambda () (with-handlers ([exn:fail? (lambda (exn) exn )])
+                  (if
+                   (let-values (((input output) (tcp-connect ip port))) (list input output))
+                   (add-tcp port)
+                   "No connection detected")))))
   (define (dispatch message)
-    (cond((eq? (car message) 'tports) (match-ports open-tcp))
-         ((eq? (car message) 'dtports) open-tcp)
+    (cond((eq? (car message) 'tports) (display-tports open-tcp))
          ((eq? (car message) 'uports) open-udp)
          ((eq? (car message) 'ip) ip)
          ((eq? (car message) 'tport) (check-tport (cadr message)) )
@@ -161,3 +148,18 @@
         (port-range-strings (map number->string port-range-numbers)))
         port-range-numbers)
       (list (string->number ports))))
+
+
+(define (sort-iter element port-list)
+    (cond((null? port-list) (cons element port-list))
+         ((< (car port-list) element) (cons (car port-list) (sort-iter element (cdr port-list))))
+         (else (cons element port-list))))
+
+; (foldr (lambda (p q) (sort-iter p q ) ) '() '(1 4 7 2 9))
+
+(define (match-tports tport-list)
+    (for-each (lambda (openport)
+                      (begin
+                        (printf "\t~a\t" openport)
+                        (for-each (lambda (x) (cond ((string=? (car x) (number->string openport)) (display (cdr x))))) tport-to-service)) (display "\n"))
+                    tport-list))
