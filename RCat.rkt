@@ -112,6 +112,10 @@
   ; we check every pair to see if it is the correct number then display the matching service if we find it.
   (define (display-tports list-of-ports)
     (match-tports (foldr (lambda (p q) (sort-iter p q ) ) '() list-of-ports)))
+  (define (match-udp-ports uport-list) (for-each (lambda (openport)
+                      (begin (printf "\t~a\t" openport)
+                                 (for-each (lambda (x) (cond ((string=? (car x) (number->string openport)) (display (cdr x))))) uport-to-service)) (display "\n"))
+                    uport-list))
   (define (probe-udp port)
     (thread (lambda ()
               (if
@@ -127,7 +131,7 @@
                    "No connection detected")))))
   (define (dispatch message)
     (cond((eq? (car message) 'tports) (display-tports open-tcp))
-         ((eq? (car message) 'uports) open-udp)
+         ((eq? (car message) 'uports) (match-udp-ports open-udp))
          ((eq? (car message) 'ip) ip)
          ((eq? (car message) 'tport) (check-tport (cadr message)) )
          ((eq? (car message) 'uport) (check-uport (cadr message)) )
