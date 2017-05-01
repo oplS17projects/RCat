@@ -128,20 +128,3 @@ This can be easily accomplished using recursion :
 
 This was a fuzzer that was specially made for a vulnerable service that requires we attempt a login to
 get access to the variable we want to overflow - hence the USER and PASS arguments that are passed across a network connection.
-
-## 5. Recursive Descent on a Folder Hierarchy
-
-These procedures are used together in ```list-all-folders```, which accepts a folder ID and recursively
-obtains the folders at the current level and then recursively calls itself to descend completely into the folder
-hierarchy.
-
-```map``` and ```flatten``` are used to accomplish the recursive descent:
-
-```
-(define (list-all-folders folder-id)
-  (let ((this-level (list-folders folder-id)))
-    (begin
-      (display (length this-level)) (display "... ")
-      (append this-level
-              (flatten (map list-all-folders (map get-id this-level)))))))
-```
