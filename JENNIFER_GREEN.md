@@ -23,6 +23,8 @@ All code below was written by Jennifer Green except where marked otherwise.
 
 ## 1. Organizing Data as Lists
 
+In order to match our open ports against a list of common known ports, we first need to read in a file containing the information we need.  We do this, then we use map and regex to organize our information inside the list.  
+
 ```
 (define udp_port_match(file->lines "common_udp_ports.txt"))
 (for-each (lambda (x) (regexp-split #rx"\t" x)) udp_port_match)
@@ -30,9 +32,9 @@ All code below was written by Jennifer Green except where marked otherwise.
 (define uport-to-service (map (lambda (x) (regexp-split #rx"\t" x)) udp_port_match))
 ```
 
-
- 
 ## 2. Using Recursion to Access Lists
+
+Once we have our list of common UDP ports, we need to match that information up against our list of currently open UDP ports and display the result.  We use a lambda expression and begin to search through our common port list, checking the car of each node to see if it matches the number of the open port.  If it does, we display the number of the port and the service associated with it; if it doesn't, we just display the port number.  
 
 ```
   (define (match-udp-ports uport-list) (for-each (lambda (openport)
@@ -42,6 +44,8 @@ All code below was written by Jennifer Green except where marked otherwise.
 ```                    
 
 ## 3. Using Lambda to Create Functions Utilizing Other Racket Libraries
+
+
 ```
   (define (probe-udp port)
     (thread (lambda ()
