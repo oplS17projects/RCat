@@ -45,6 +45,7 @@ Once we have our list of common UDP ports, we need to match that information up 
 
 ## 3. Using Lambda to Create Functions Utilizing Other Racket Libraries
 
+This is how we try to get our program to determine if a UDP port is open or closed.  At the moment, it always returns open, which is obviously not what we would like it to do.  We went through several different versions of this function trying to get it to work correctly, but were unable to get it fully functional (possibly due to the limitations of the UDP system).  
 
 ```
   (define (probe-udp port)
@@ -53,10 +54,16 @@ Once we have our list of common UDP ports, we need to match that information up 
                (udp-connect! udp-socket ip port)
                (add-udp port)
                "No connection detected"))))
-```               
+```
+
+This screenshot shows the program NMap, a professional port scanner being run twice back to back with different UDP ports being lsted as open and closed.  False positives are apparently very common with port scanning software.  
+
+[IMG]
 
 ## 4. Creating Closures and Using Dispatch
-Note:  The majority of this code was written by Josh Everett
+Note:  The majority of this code was written by Josh Everett.  The cond statement and lines dealing with udp were written by Jennifer Green.  
+
+This is out dispatch function.  It takes in a message from the user and performs different operations depending on what the user wants done.  For example, if the user typed in '(uports), the program would run the function match-udp-ports.  
 
 ```  
 (define (dispatch message)
