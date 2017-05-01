@@ -132,9 +132,10 @@
          ((eq? (car message) 'tport) (check-tport (cadr message)) )
          ((eq? (car message) 'uport) (check-uport (cadr message)) )
          (else error "Bad moves, dude")))
-  (begin (if (string=? protocols "t")
-             (map (lambda (x) (probe-tcp x)) (enum-ports ports))
-             (map (lambda (x) (probe-udp x)) (enum-ports ports)))
+  (begin (cond ((string=? protocols "t")
+             (map (lambda (x) (probe-tcp x)) (enum-ports ports)))
+             ((string=? protocols "u")
+             (map (lambda (x) (probe-udp x)) (enum-ports ports))))
          dispatch))
 
 ;; break a range up ports in form "1-443"
