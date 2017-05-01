@@ -21,12 +21,50 @@ We used two libraries, racket/tcp and racket/udp.
 
 All code below was written by Jennifer Green except where marked otherwise.  
 
-## 1. 
+## 1. Organizing Data as Lists
+
+```
+(define udp_port_match(file->lines "common_udp_ports.txt"))
+(for-each (lambda (x) (regexp-split #rx"\t" x)) udp_port_match)
+...
+(define uport-to-service (map (lambda (x) (regexp-split #rx"\t" x)) udp_port_match))
+```
 
 
  
-## 2. 
+## 2. Using Recursion to Access Lists
 
-## 3. 
+```
+  (define (match-udp-ports uport-list) (for-each (lambda (openport)
+                      (begin (printf "\t~a\t" openport)
+                                 (for-each (lambda (x) (cond ((string=? (car x) (number->string openport)) (display (cdr x))))) uport-to-service)) (display "\n"))
+                    uport-list))
+```                    
 
-## 4. 
+## 3. Using Lambda to Create Functions Utilizing Other Racket Libraries
+```
+  (define (probe-udp port)
+    (thread (lambda ()
+              (if
+               (udp-connect! udp-socket ip port)
+               (add-udp port)
+               "No connection detected"))))
+```               
+
+## 4. Creating Closures and Using Dispatch
+Note:  The majority of this code was written by Josh Everett
+
+```  
+(define (dispatch message)
+    (cond((eq? (car message) 'tports) (display-tports open-tcp))
+         ((eq? (car message) 'uports) (match-udp-ports open-udp))
+         ((eq? (car message) 'ip) ip)
+         ((eq? (car message) 'tport) (check-tport (cadr message)) )
+         ((eq? (car message) 'uport) (check-uport (cadr message)) )
+         (else error "Bad moves, dude")))
+  (begin (cond ((string=? protocols "t")
+             (map (lambda (x) (probe-tcp x)) (enum-ports ports)))
+             ((string=? protocols "u")
+             (map (lambda (x) (probe-udp x)) (enum-ports ports))))
+         dispatch))
+```
