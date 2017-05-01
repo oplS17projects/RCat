@@ -58,7 +58,7 @@ This is how we try to get our program to determine if a UDP port is open or clos
 
 This screenshot shows the program NMap, a professional port scanner being run twice back to back with different UDP ports being lsted as open and closed.  False positives are apparently very common with port scanning software.  
 
-[IMG]
+![NMap Screenshot](/NMapScreenshot.png?raw=true "NMap Screenshot")
 
 ## 4. Creating Closures and Using Dispatch
 Note:  The majority of this code was written by Josh Everett.  The cond statement and lines dealing with udp were written by Jennifer Green.  
